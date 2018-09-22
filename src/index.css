@@ -1,7 +1,12 @@
+.watch{
+    background-color: #000000
+}
+
 .container{
     position: relative;
     overflow: hidden;
 }
+
 .KB{
     position: absolute;
     left: 0px;
@@ -10,6 +15,7 @@
     -webkit-transition : all 0.1s ease-out;
 }
 
+/* TextField Style */
 .typed{
     font-size: 48pt;
     font-family: "HelveticalNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
