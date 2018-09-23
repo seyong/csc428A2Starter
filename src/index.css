@@ -1,5 +1,4 @@
 .watch{
-    background-color: #000000
 }
 
 .container{
@@ -7,14 +6,18 @@
     overflow: hidden;
 }
 
+/*
 .KB{
     position: absolute;
     left: 0px;
     top: 0px;
     pointer-events: none;
     -webkit-transition : all 0.1s ease-out;
-}
+}*/
 
+img {
+    position: absolute;
+}
 /* TextField Style */
 .typed{
     font-size: 48pt;
@@ -39,6 +42,8 @@
     text-transform: capitalize;
     line-height: normal;
 }
+
+
 :focus {
     outline: none;
 }

@@ -11,12 +11,11 @@ class Keyboard extends React.Component {
 
 		//set React State variables
 		this.state ={
-         original_position: {x:0,y:0},
 		 font_size: 0,
          in_starting_position: true,
          origin_scale: this.props.origin_scale
 		};
-        this.original_position =  {x:0,y:0},
+        this.original_position =  {x:0,y:0};
 		this.original_dimensions = {width:0, height:0};	
 		this.displaySize = this.props.displaySize;
 
@@ -75,7 +74,7 @@ class Keyboard extends React.Component {
 				key = "Enter";
 			}
 			// trigger 
-
+			this.props.callback(key);
 			// flash
 			ev.preventDefault();
 			ev.stopPropagation();
@@ -182,8 +181,6 @@ class Keyboard extends React.Component {
 
 	getWindowDimension = () => {
 		return {
-			//width: this.original_dimensions.width * this.props.original_scale,
-			//height: this.original_dimensions.height * this.props.original_scale
 			width: this.displaySize.width,
 			height: this.original_dimensions.height * this.env.originalScale
 		};

@@ -1,23 +1,42 @@
 import React from 'react';
-import KeySet from './keys.js'
+import {keys,keys_sym} from './keys.js'
 
-// Keyboard component renders a keyboard layout
-//	with img
-class Keyboard extends React.Component {
+// Keyboard2, 
+//	 
+class Keyboard2 extends React.Component {
 
+	// Constructor, normal constructor in java
 	constructor(props){
 		super(props);
+		// this is the state variables, which is very special in React.
+		// In react, once the state variables has changed by calling setState(),
+		// render() function is followed. 
+		// this.props is the property passing by their parent DOM in this case,
+		// Watch class
+
+		// Please have a look doZoom, setViewport, and setPosition functions
 		this.state ={
-		 original_position: {x:0,y:0,width:0,height:0},
-		 original_dimensions: {width:0, height:0},
-		 font_size: 0,
-		 in_starting_position: true
+		
+		 original_position: {x:0,y:0,width:0,height:0}, //ignore 
+		 original_dimensions: {width:0, height:0}, //ignore
+		 font_size: 0, // haven't use
+		 // When user touch or click, imgStyle value has changes so that 
+		 // 	the class re-render their html componenets
+		 imgStyle :{ 
+			 left:0,top:0,
+			 width: this.props.width,
+			 height: this.props.height
+		 }
 		};
-		this.onLoad = this.onLoad.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
+
+		this.in_starting_position =  true;
+		this.original_position = {x:0,y:0};
+		this.original_dimensions = {width:0,height:0};
+		this.displaySize = this.props.displaySize;
+
+		// this configuration is from original zoomboard code
 		this.keyboardImg = null;
 		this.env = {
-			keymaps: [KeySet.keys,KeySet.keys_sym],
 			keyboardNames: ["ZB","#"],
 			zoomFactor: 2.2,
 			originalScale: 0.12,
@@ -32,15 +51,23 @@ class Keyboard extends React.Component {
 			useRealKeyboard: true
 		}
 
+		// register Event
+		this.onLoad = this.onLoad.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
 	}
 
+	// When the image is loaded, we recalculate the img size to fit into our
+	// 	fixed width and height
 	onLoad({target:img}){
-		this.setState({original_dimensions:
-						{width: img.naturalWidth,
-						height: img.naturalHeight}
-						})
+		console.log("image naturalSize: "+img.naturalWidth+":"+img.naturalHeight);
+		this.original_dimensions = {width : img.naturalWidth, height:img.naturalHeight};
+		console.log("[onLoad]  - "+this.original_dimensions.width+":"+this.original_dimensions.height);
+		this.env.originalScale = this.displaySize.width/this.original_dimensions.width;
+		this.setState({original_scale: 
+							this.displaySize.width/this.original_dimensions.width});
+		this.reset();
 	}
 
 	onKeyDown = (e) => {
@@ -50,16 +77,23 @@ class Keyboard extends React.Component {
 	onMouseDown = (e) =>{
 		console.log("clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
 		":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY);
+	}
+
+	// mouse click event is handled here.
+	onPointerDown = (e) => {
+		console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
+		":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
+		console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
+		console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
+		// use e.nativeEvent.offsetX,Y for accuracy
+		//var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
+		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
+		//this.getKeyChar({x:x,y:y});
+		this.onKeyClick(e);
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
-	onPointerDown = (e) => {
-	}
-
-	componentWillMount = () => {}
-	componentDidMount = () => {}
-	componentWillUpdate = () => {}
 	componentDidUpdate = () => {
 		console.log("componentDidUpdate");
 		window.setTimeout(() => {
@@ -72,47 +106,50 @@ class Keyboard extends React.Component {
 		const style = {
 			width: size.width,
 			height: size.height,
-		}
+		};
 		const font_height = {
 			fontSize : size.height / 1.2
 		};
 		console.log("[render] " +size.width);
 
-
 		return(
-			// Why tabIndex='0' is required? for keyDownEvent?
 			<div className="container" style={style} onKeyDown={this.onKeyDown} tabIndex="0"
 					onMouseDown = {this.onMouseDown} onPointerDown = {this.onPointerDown}>
-				<img src="/images/keyboard.png" className="KB" alt="kb" onLoad={this.onLoad}
-							style={style}/>
+				<img src="/images/ZoomBoard3.png" className="KB" alt="kb" onLoad={this.onLoad}
+							style={this.state.imgStyle}/>
 			</div>
 		)
 	}
 
 	getWindowDimension = () => {
 		return {
-			width: this.state.original_dimensions.width * this.props.original_scale,
-			height: this.state.original_dimensions.height * this.props.original_scale
+			width: this.original_dimensions.width * this.env.originalScale,
+			height: this.original_dimensions.height * this.env.originalScale
 		};
 	}
 
 	reset = (animated) => {
+		console.log("[Reset] reser called.. originDim - "+this.original_dimensions.width+":"+this.original_dimensions.height);
 		this.setViewPort({x:0 , y:0, width: this.original_dimensions.width, height:this.original_dimensions.height},
 			animated === true);
 		this.clearResetTimeout();
-		this.setState({in_starting_position: true});
+		this.in_starting_position = true;
 	}
 
 	setViewPort = (viewport,animated) =>{
 		var windowDim = this.getWindowDimension();
 		var scale_x = windowDim.width/viewport.width;
 		var scale_y = windowDim.height/viewport.height;
-		var width = scale_x * this.state.original_dimensions.width;
-		var height = scale_y * this.state.original_dimensions.height;
+		console.log("windowDim - "+windowDim.width +":"+windowDim.height);
+		console.log("[setViewport] called.. originDim - "+viewport.width+":"+viewport.height);
+		console.log("Scale XY - "+scale_x +":"+scale_y);
+		var width = scale_x * this.original_dimensions.width;
+		var height = scale_y * this.original_dimensions.height;
 		var x = -1 * viewport.x * scale_x;
 		var y = -1 * viewport.y * scale_y;
 
 		this.setPosition({x:x,y:y,width:width,height:height},animated);
+		this.viewport = viewport;
 	}
 
 	setPosition = (position,animated) => {
@@ -120,6 +157,16 @@ class Keyboard extends React.Component {
 			//img.css -webkit-transition none
 			//img.css -webkit-transition all 0.001s ease-out
 		}
+		console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
+		this.setState({
+			imgStyle:{
+				left:position.x,
+				top:position.y,
+				width:position.width,
+				height:position.height
+			}
+		})
+		this.position = position;
 	}
 
 	clearResetTimeout = () => {
@@ -139,13 +186,62 @@ class Keyboard extends React.Component {
 
 		var scaleFactor = this.env.zoomFactor;
 		var centerBias = this.env.centerBias;
-		var maxZom = this.env.maxZoom;
-
-		//do zoom
+		var maxZoom = this.env.maxZoom;
 
 		this.clearResetTimeout();
 		//Assuming mouse
+		if(this.env.isTouchEnabled){
+
+		}else{
+			var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
+			var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
+			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
+			this.resetTimeoutFunc();
+		}
 		return false;
+	}
+
+	resetTimeoutFunc =  () => {
+		this.clearResetTimeout();
+		var resetTimeout = this.env.resetTimeout;
+		this.resetTimeout = window.setTimeout(this.reset,resetTimeout);
+	}
+
+	doZoom = (x,y,scaleFactor,currentZoomVal,maxZoom,centerBias) => {
+		//var zoomtouch_event = jQuery.Event("zb_zoom")
+		//zoomtouch_event.x = x;, zoomtouch_event.y = y;
+		//this.element.trigger(zoomtouch_event);
+
+		if(scaleFactor * currentZoomVal > maxZoom){
+			var key = this.getKeyChar({x:x,y:y});
+			if(key !== null){
+				//var zoomkey_event = jQuery.Event("zb_key");
+				//zoomkey_event.key = key.key;
+				//zoomkey_event.entry_type = "press";
+				//this.element.trigger(zoomkey_event);
+				//this.flashkey(zoomkey_event.key);	
+			}
+			this.reset();
+			return;
+		}else{
+			this.in_starting_position = false;
+			var newViewportWidth = this.viewport.width / scaleFactor ;
+			var newViewportHeight = this.viewport.height / scaleFactor;
+
+			var centeredX = x - newViewportWidth/2;
+			var centeredY = y - newViewportHeight/2;
+
+			var biasedViewportX = x - (newViewportWidth * (x - this.viewport.x))/
+										this.viewport.width;
+			var biasedViewportY = y- (newViewportHeight * (y - this.viewport.y))/
+										this.viewport.height;
+			this.setViewPort({
+				width: newViewportWidth,
+				height: newViewportHeight,
+				x: biasedViewportX * (1-centerBias) + centeredX * centerBias,
+				y: biasedViewportY * (1-centerBias) + centeredY * centerBias,
+			});
+		}
 	}
 
 	getXZoom = () =>{
@@ -159,4 +255,4 @@ class Keyboard extends React.Component {
 	}
 }
 
-export default Keyboard;
+export default Keyboard2;

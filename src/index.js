@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import TextArea from './textarea.js'
 import Keyboard from './keyboard.js'
+import Keyboard2 from './keyboard.wip.js'
 
 const styles = {
 	size42:{
@@ -56,7 +57,15 @@ class Watch extends React.Component {
 		super(props);
 		this.dpr = window.devicePixelRatio;
 		this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
+		this.state = {
+			inputInput: ""
+		};
 	}
+
+	handleChange = (c) => {
+		console.log("[Watch onHandleChange "+c);
+		this.setState({inputChar : c});
+	};
 
 	render(){
 		const styles = {
@@ -64,9 +73,9 @@ class Watch extends React.Component {
 			height: this.screenSize.height
 		}
 		return(
-			<div className="watch" style={styles}>
-				<TextArea />
-				<Keyboard original_scale={this.props.original_scale} displaySize = {this.screenSize}/>
+			<div className="watch" style={styles} >
+				<TextArea inputChar={this.state.inputChar}/>
+				<Keyboard2 original_scale={this.props.original_scale} displaySize = {this.screenSize} callback={this.handleChange}/>
 			</div>
 		);
 	}
