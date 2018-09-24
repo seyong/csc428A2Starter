@@ -1,8 +1,8 @@
 import React from 'react';
 import {keys,keys_sym} from './keys.js'
 
-// Keyboard2, 
-//	 
+// Keyboard2,
+//
 class Keyboard2 extends React.Component {
 
 	// Constructor, normal constructor in java
@@ -10,19 +10,19 @@ class Keyboard2 extends React.Component {
 		super(props);
 		// this is the state variables, which is very special in React.
 		// In react, once the state variables has changed by calling setState(),
-		// render() function is followed. 
+		// render() function is followed.
 		// this.props is the property passing by their parent DOM in this case,
 		// Watch class
 
 		// Please have a look doZoom, setViewport, and setPosition functions
 		this.state ={
-		
-		 original_position: {x:0,y:0,width:0,height:0}, //ignore 
+		 swiped: false,
+		 original_position: {x:0,y:0,width:0,height:0}, //ignore
 		 original_dimensions: {width:0, height:0}, //ignore
 		 font_size: 0, // haven't use
-		 // When user touch or click, imgStyle value has changes so that 
+		 // When user touch or click, imgStyle value has changes so that
 		 // 	the class re-render their html componenets
-		 imgStyle :{ 
+		 imgStyle :{
 			 left:0,top:0,
 			 width: this.props.width,
 			 height: this.props.height
@@ -51,12 +51,40 @@ class Keyboard2 extends React.Component {
 			useRealKeyboard: true
 		}
 
+		this._onTouchStart = this._onTouchStart.bind(this);
+    this._onTouchMove = this._onTouchMove.bind(this);
+    this._onTouchEnd = this._onTouchEnd.bind(this);
+    this._swipe = {};
+
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
 	}
+
+
+	_onTouchStart(e) {
+			const touch = e.touches[0];
+			this._swipe = { x: touch.clientX };
+			this.setState({ swiped: false });
+		}
+
+		_onTouchMove(e) {
+			if (e.changedTouches && e.changedTouches.length) {
+				const touch = e.changedTouches[0];
+				this._swipe.swiping = true;
+			}
+		}
+
+		_onTouchEnd(e) {
+			const touch = e.changedTouches[0];
+			if (this._swipe.swiping && Math.abs(touch.clientX - this._swipe.x) > this.minDistance ) {
+				this.props.onSwiped && this.props.onSwiped();
+				this.setState({ swiped: true });
+			}
+			this._swipe = {};
+		}
 
 	// When the image is loaded, we recalculate the img size to fit into our
 	// 	fixed width and height
@@ -65,7 +93,7 @@ class Keyboard2 extends React.Component {
 		this.original_dimensions = {width : img.naturalWidth, height:img.naturalHeight};
 		console.log("[onLoad]  - "+this.original_dimensions.width+":"+this.original_dimensions.height);
 		this.env.originalScale = this.displaySize.width/this.original_dimensions.width;
-		this.setState({original_scale: 
+		this.setState({original_scale:
 							this.displaySize.width/this.original_dimensions.width});
 		this.reset();
 	}
@@ -116,7 +144,10 @@ class Keyboard2 extends React.Component {
 
 		return(
 			<div className="container" style={style} onKeyDown={this.onKeyDown} tabIndex="0"
-					onMouseDown = {this.onMouseDown} onPointerDown = {this.onPointerDown}>
+					onMouseDown = {this.onMouseDown} onPointerDown = {this.onPointerDown}
+					onTouchStart={this._onTouchStart}
+					onTouchMove={this._onTouchMove}
+					onTouchEnd={this._onTouchEnd}>
 				<img src="/images/ZoomBoard3.png" className="KB" alt="kb" onLoad={this.onLoad}
 							style={this.state.imgStyle}/>
 			</div>
@@ -222,13 +253,13 @@ class Keyboard2 extends React.Component {
 		if(scaleFactor * currentZoomVal > maxZoom){
 			console.log("Exceeded maxZoom ");
 			//var key = this.getKeyChar({x:x,y:y});
-			
+
 			//if(key !== null){
 				//var zoomkey_event = jQuery.Event("zb_key");
 				//zoomkey_event.key = key.key;
 				//zoomkey_event.entry_type = "press";
 				//this.element.trigger(zoomkey_event);
-				//this.flashkey(zoomkey_event.key);	
+				//this.flashkey(zoomkey_event.key);
 			//	console.log("[doZoom] Key is not null");
 			//}
 			this.reset();

@@ -13,10 +13,11 @@ class Keyboard extends React.Component {
 		this.state ={
 		 font_size: 0,
          in_starting_position: true,
-         origin_scale: this.props.origin_scale
+         origin_scale: this.props.origin_scale,
+				  swiped: false
 		};
         this.original_position =  {x:0,y:0};
-		this.original_dimensions = {width:0, height:0};	
+		this.original_dimensions = {width:0, height:0};
 		this.displaySize = this.props.displaySize;
 
 		this.keyboardImg = null;
@@ -40,6 +41,36 @@ class Keyboard extends React.Component {
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
+
+		this._onTouchStart = this._onTouchStart.bind(this);
+		this._onTouchMove = this._onTouchMove.bind(this);
+		this._onTouchEnd = this._onTouchEnd.bind(this);
+		this._swipe = {};
+
+	}
+
+
+	_onTouchStart(e) {
+		const touch = e.touches[0];
+		this._swipe = { x: touch.clientX };
+		this.setState({ swiped: false });
+	}
+
+	_onTouchMove(e) {
+		if (e.changedTouches && e.changedTouches.length) {
+			const touch = e.changedTouches[0];
+			this._swipe.swiping = true;
+		}
+	}
+
+	_onTouchEnd(e) {
+		const touch = e.changedTouches[0];
+		const absX = Math.abs(touch.clientX - this._swipe.x);
+		if (this._swipe.swiping && absX > this.minDistance ) {
+			this.props.onSwiped && this.props.onSwiped();
+			this.setState({ swiped: true });
+		}
+		this._swipe = {};
 	}
 
 	onLoad({target:img}){
@@ -65,7 +96,7 @@ class Keyboard extends React.Component {
 		}else if(ev.keyCode == 40){
 			console.log("[KeyPressed] Down arrow clicked");
 		}else{
-			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();		
+			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();
 			if(ev.keyCode === 8){
 				ev.returnValue = false;
 				ev.cancleBubble = true;
@@ -73,7 +104,7 @@ class Keyboard extends React.Component {
 			}else if(ev.keyCode === 13){
 				key = "Enter";
 			}
-			// trigger 
+			// trigger
 			this.props.callback(key);
 			// flash
 			ev.preventDefault();
@@ -123,9 +154,13 @@ class Keyboard extends React.Component {
 			// Why tabIndex='0' is required? for keyDownEvent?
 			//<div className="container" style={this.props.style} onKeyDown={this.onKeyDown} tabIndex="0"
 			<div className="container" onKeyDown={this.onKeyDown} tabIndex="0"
-					onMouseDown = {this.onMouseDown} style={style} onPointerDown = {this.onPointerDown}>
+					onMouseDown = {this.onMouseDown} style={style} onPointerDown = {this.onPointerDown}
+					onTouchStart={this._onTouchStart}
+					onTouchMove={this._onTouchMove}
+					onTouchEnd={this._onTouchEnd}>
 				<img src="/images/ZoomBoard3.png" className="KB" alt="kb" onLoad={this.onLoad}
 							style={style}/>
+									{`Component-${this.state.swiped ? 'swiped' : ''}`}
 			</div>
 		)
 	}
@@ -199,7 +234,7 @@ class Keyboard extends React.Component {
 			{
 				console.log("[" + keychar.key + "] pressed ");
 			}else{
-				
+
 			}
 			if(i==0){
 				//console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);

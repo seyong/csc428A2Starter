@@ -78,6 +78,7 @@ class Watch extends React.Component {
 				<Keyboard2 original_scale={this.props.original_scale} displaySize = {this.screenSize} callback={this.handleChange}/>
 			</div>
 		);
+
 	}
 }
 
