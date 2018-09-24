@@ -26,7 +26,12 @@ class Keyboard2 extends React.Component {
 			 left:0,top:0,
 			 width: this.props.width,
 			 height: this.props.height
-		 }
+		 },
+		 overlayStyle : {
+			 opacity: 0,
+			 color: "white"
+		 },
+		 overlayText : ""
 		};
 
 		this.in_starting_position =  true;
@@ -54,7 +59,6 @@ class Keyboard2 extends React.Component {
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
-		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onPointerDown = this.onPointerDown.bind(this);
 	}
 
@@ -70,13 +74,33 @@ class Keyboard2 extends React.Component {
 		this.reset();
 	}
 
-	onKeyDown = (e) => {
-		console.log("Key pressed: " + e.key + "/" +e.keyCode);
-	}
-
-	onMouseDown = (e) =>{
-		console.log("clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
-		":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY);
+	onKeyDown = (ev) => {
+		console.log("Key pressed: " + ev.key + "/" +ev.keyCode);
+		if(ev.keyCode === 37){
+			console.log("[KeyPressed] Left arrow clicked");
+		}else if(ev.keyCode === 38){
+			console.log("[KeyPressed] Top arrow clicked");
+		}else if(ev.keyCode === 39){
+			console.log("[KeyPressed] Right arrow clicked");
+		}else if(ev.keyCode === 40){
+			console.log("[KeyPressed] Down arrow clicked");
+		}else{
+			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();		
+			if(ev.keyCode === 8){
+				ev.returnValue = false;
+				ev.cancleBubble = true;
+				key = "delete";
+			}else if(ev.keyCode === 13){
+				key = "Enter";
+			}
+			// trigger 
+			this.props.callback(key);
+			// flash
+			this.flashKey(key);
+			ev.preventDefault();
+			ev.stopPropagation();
+			return false;
+		}
 	}
 
 	// mouse click event is handled here.
@@ -91,8 +115,8 @@ class Keyboard2 extends React.Component {
 		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
 		//this.getKeyChar({x:x,y:y});
 		this.onKeyClick(e);
-		e.preventDefault();
-		e.stopPropagation();
+		//e.preventDefault();
+		//e.stopPropagation();
 	}
 
 	componentDidUpdate = () => {
@@ -109,6 +133,13 @@ class Keyboard2 extends React.Component {
 			width: size.width,
 			height: size.height,
 		};
+		const overlayStyle = {
+			width: size.width,
+			height: size.height,
+			opacity: this.state.overlayStyle.opacity,
+			color: this.state.overlayStyle.color,
+			fontSize: (size.height/1.2)+"px"
+		};
 		const font_height = {
 			fontSize : size.height / 1.2
 		};
@@ -116,9 +147,11 @@ class Keyboard2 extends React.Component {
 
 		return(
 			<div className="container" style={style} onKeyDown={this.onKeyDown} tabIndex="0"
-					onMouseDown = {this.onMouseDown} onPointerDown = {this.onPointerDown}>
+					onMouseDown={this.onMouseDown} onPointerDown={this.onPointerDown}>
 				<img src="/images/ZoomBoard3.png" className="KB" alt="kb" onLoad={this.onLoad}
 							style={this.state.imgStyle}/>
+				<div className="overlay" style={overlayStyle} dangerouslySetInnerHTML={{__html: this.state.overlayText}}>
+				</div>
 			</div>
 		)
 	}
@@ -179,8 +212,8 @@ class Keyboard2 extends React.Component {
 	}
 
 	onKeyClick = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+		//e.preventDefault();
+		//e.stopPropagation();
 		console.log("[2Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 
 		var currentZoomX = this.getXZoom();
@@ -262,6 +295,47 @@ class Keyboard2 extends React.Component {
 	}
 	getZoom = () => {
 		return Math.max(this.getXZoom(), this.getYZoom());
+	}
+
+	flash = (text, duration, color) => {
+		duration = duration || 250;
+		color = color || "white";
+		//window.clearTimeout(this.flashTimeout);
+		this.setState({
+			overlayStyle:{
+				opacity: 0.95,
+				color: color
+			},
+			overlayText: text
+		});
+		setTimeout(
+			function() {
+				this.setState({
+				overlayStyle:{
+					opacity: 0}})
+			}
+			.bind(this),
+			duration
+		);
+		/*
+		this.flashTimeout = window.setTimeout(
+			this.setState({
+				overlayStyle:{
+					opacity: 0
+			}}),duration);*/
+	}	
+
+	flashKey = (key) => {
+		if(key === "delete") {
+			//this.flash("&#9224;");
+			this.flash("&#x232B");
+		} else if(key === "enter") {
+			this.flash("&#9252;");
+		} else if(key === " ") {
+			this.flash("&#9251;");
+		} else {
+			this.flash(key);
+		}
 	}
 }
 
