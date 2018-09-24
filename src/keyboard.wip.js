@@ -60,7 +60,6 @@ class Keyboard2 extends React.Component {
     this._onTouchMove = this._onTouchMove.bind(this);
     this._onTouchEnd = this._onTouchEnd.bind(this);
     this._swipe = {};
-
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -71,14 +70,14 @@ class Keyboard2 extends React.Component {
 	_onTouchStart(e) {
 		const touch = e.nativeEvent.touches[0];
 		this._swipe = { x: touch.clientX, y: touch.clentY };
-		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
+		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
 		this.setState({ swiped: false });
 		}
 
 		_onTouchMove(e) {
 			if (e.changedTouches && e.changedTouches.length) {
 				const touch = e.nativeEvent.changedTouches[0];
-				console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
+				// console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
 				this._swipe.swiping = true;
 			}
 		}
@@ -288,17 +287,23 @@ class Keyboard2 extends React.Component {
 		var centerBias = this.env.centerBias;
 		var maxZoom = this.env.maxZoom;
 
-		const touch = e.nativeEvent.changedTouches[0];
+		this.clearResetTimeout();
+
+		const touch = e.nativeEvent.changedTouches[0];//e.nativeEvent.changedTouches[0];
 		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
 		console.log("touch offset x: " + e.nativeEvent.offsetX + "; offset y: " + e.nativeEvent.offsetY);
-		this.clearResetTimeout();
+
 		//Assuming mouse
 		if(this.env.isTouchEnabled){
 
 		}else{
 			var x =  touch.clientX / currentZoomX + this.viewport.x;
 			var y =  touch.clientY / currentZoomY + this.viewport.y;
-			console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+			// var x =  (touch.clientX-this.viewport.x) / currentZoomX + this.viewport.x;
+			// var y =  (touch.clientY-this.viewport.y) / currentZoomY + this.viewport.y;
+			// var x =  touch.clientX;
+			// var y =  touch.clientY;
+			// console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
 			// console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
