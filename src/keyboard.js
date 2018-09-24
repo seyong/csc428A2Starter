@@ -233,6 +233,7 @@ class Keyboard extends React.Component {
 			if(keychar.x <= pt.x && keychar.y <= pt.y && keychar.x + keychar.width >= pt.x && keychar.y + keychar.height >= pt.y)
 			{
 				console.log("[" + keychar.key + "] pressed ");
+				return keychar.key;
 			}else{
 
 			}

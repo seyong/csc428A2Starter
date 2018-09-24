@@ -285,8 +285,6 @@ class Keyboard2 extends React.Component {
 		var currentZoomY = this.getYZoom();
 		var currentZoomVal = this.getZoom();
 
-		// console.log("currentZoomX: " + currentZoomX +  "; currentZoomY: " + currentZoomY);
-
 		var scaleFactor = this.env.zoomFactor;
 		var centerBias = this.env.centerBias;
 		var maxZoom = this.env.maxZoom;
@@ -324,17 +322,16 @@ class Keyboard2 extends React.Component {
 
 		console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
 		if(scaleFactor * currentZoomVal > maxZoom){
-			console.log("Exceeded maxZoom ");
-			//var key = this.getKeyChar({x:x,y:y});
+			//console.log("Exceeded maxZoom ");
+			var key = this.getKeyChar({x:x,y:y});
 
-			//if(key !== null){
-				//var zoomkey_event = jQuery.Event("zb_key");
-				//zoomkey_event.key = key.key;
-				//zoomkey_event.entry_type = "press";
+			if(key !== null){
 				//this.element.trigger(zoomkey_event);
 				//this.flashkey(zoomkey_event.key);
-			//	console.log("[doZoom] Key is not null");
-			//}
+				console.log("[doZoom] Key is not null");
+				this.props.callback(key);
+				this.flashKey(key);
+			}
 			this.reset();
 			return;
 		}else{
@@ -368,6 +365,30 @@ class Keyboard2 extends React.Component {
 		return Math.max(this.getXZoom(), this.getYZoom());
 	}
 
+	getKeyChar = (pt) => {
+		//console.log("Key Event");
+		//var keys = this.env.keymaps.keys;
+		//console.log("Key Event: " + keys.length);
+		//console.log("Poitn Event => "+ pt.x + "/" + pt.y);
+		var minDistance = false, minDistanceKey = null;
+		var maxKeyErrorDistSquared = Math.pow(this.env.maxKeyErrorDistance,2);
+		for(var i=0, len = keys.length; i<len; i++){
+			var keychar = keys[i];
+			if(keychar.x <= pt.x && keychar.y <= pt.y && keychar.x + keychar.width >= pt.x && keychar.y + keychar.height >= pt.y)
+			{
+				console.log("[" + keychar.key + "] pressed ");
+				return keychar.key;
+			}else{
+
+			}
+			if(i===0){
+				//console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
+			}
+//			console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
+		}
+	}
+
+
 	flash = (text, duration, color) => {
 		duration = duration || 250;
 		color = color || "white";
@@ -388,12 +409,6 @@ class Keyboard2 extends React.Component {
 			.bind(this),
 			duration
 		);
-		/*
-		this.flashTimeout = window.setTimeout(
-			this.setState({
-				overlayStyle:{
-					opacity: 0
-			}}),duration);*/
 	}
 
 	flashKey = (key) => {
