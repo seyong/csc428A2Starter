@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {keys,keys_sym} from './keys.js'
 
 // Keyboard2,
@@ -57,9 +58,9 @@ class Keyboard2 extends React.Component {
 		}
 
 		this._onTouchStart = this._onTouchStart.bind(this);
-    this._onTouchMove = this._onTouchMove.bind(this);
-    this._onTouchEnd = this._onTouchEnd.bind(this);
-    this._swipe = {};
+    	this._onTouchMove = this._onTouchMove.bind(this);
+    	this._onTouchEnd = this._onTouchEnd.bind(this);
+    	this._swipe = {};
 
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
@@ -72,27 +73,27 @@ class Keyboard2 extends React.Component {
 		const touch = e.nativeEvent.touches[0];
 		this._swipe = { x: touch.clientX, y: touch.clentY };
 		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
-		this.setState({ swiped: false });
-		}
+		//this.setState({ swiped: false });
+	}
 
-		_onTouchMove(e) {
-			if (e.changedTouches && e.changedTouches.length) {
-				const touch = e.nativeEvent.changedTouches[0];
-				console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
-				this._swipe.swiping = true;
-			}
-		}
-
-		_onTouchEnd(e) {
+	_onTouchMove(e) {
+		if (e.changedTouches && e.changedTouches.length) {
 			const touch = e.nativeEvent.changedTouches[0];
-			if (this._swipe.swiping && Math.abs(touch.clientX - this._swipe.x) > this.minDistance ) {
-				this.props.onSwiped && this.props.onSwiped();
-				console.log("touch end x: " + touch.clientX + "; y: " + touch.clientY);
-				this.setState({ swiped: true });
-			}
-			this._swipe = {};
-			this.onFingerTouch(e);
+			console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
+			this._swipe.swiping = true;
 		}
+	}
+
+	_onTouchEnd(e) {
+		//const touch = e.nativeEvent.changedTouches[0];
+		//if (this._swipe.swiping && Math.abs(touch.clientX - this._swipe.x) > this.minDistance ) {
+		//	this.props.onSwiped && this.props.onSwiped();
+		//	console.log("touch end x: " + touch.clientX + "; y: " + touch.clientY);
+			//this.setState({ swiped: true });
+		//}
+		//this._swipe = {};
+		this.onFingerTouch(e);
+	}
 
 	// When the image is loaded, we recalculate the img size to fit into our
 	// 	fixed width and height
@@ -157,6 +158,8 @@ class Keyboard2 extends React.Component {
 		window.setTimeout(() => {
 			console.log("timeout");
 		},500);*/
+		this.offsetTop = ReactDOM.findDOMNode(this).offsetTop;
+		this.offsetLeft = ReactDOM.findDOMNode(this).offsetLeft;
 	}
 
 	render(){
@@ -226,7 +229,7 @@ class Keyboard2 extends React.Component {
 			//img.css -webkit-transition none
 			//img.css -webkit-transition all 0.001s ease-out
 		}
-		// console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
+		 console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
 		this.setState({
 			imgStyle:{
 				left:position.x,
@@ -290,17 +293,18 @@ class Keyboard2 extends React.Component {
 
 		const touch = e.nativeEvent.changedTouches[0];
 		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
-		console.log("touch offset x: " + e.nativeEvent.offsetX + "; offset y: " + e.nativeEvent.offsetY);
 		this.clearResetTimeout();
 		//Assuming mouse
 		if(this.env.isTouchEnabled){
 
 		}else{
-			var x =  touch.clientX / currentZoomX + this.viewport.x;
-			var y =  touch.clientY / currentZoomY + this.viewport.y;
-			console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
-			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			// console.log("[Click before doZoom] xy => "+x + "/"+y);
+			//pageX includes scroll offset Value
+			console.log("[offset] - "+this.offsetLeft + "/" + this.offsetTop);
+			var x =  (touch.pageX - this.offsetLeft) / currentZoomX + this.viewport.x;
+			var y =  (touch.pageY - this.offsetTop) / currentZoomY + this.viewport.y;
+			//console.log("[Click before doZoom] touchXY => "+touch.clientX + "/"+touch.clientY);
+			console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
