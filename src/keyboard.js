@@ -87,13 +87,13 @@ class Keyboard extends React.Component {
 
 	onKeyDown = (ev) => {
 		console.log("Key pressed: " + ev.key + "/" +ev.keyCode);
-		if(ev.keyCode == 37){
+		if(ev.keyCode === 37){
 			console.log("[KeyPressed] Left arrow clicked");
-		}else if(ev.keyCode == 38){
+		}else if(ev.keyCode === 38){
 			console.log("[KeyPressed] Top arrow clicked");
-		}else if(ev.keyCode == 39){
+		}else if(ev.keyCode === 39){
 			console.log("[KeyPressed] Right arrow clicked");
-		}else if(ev.keyCode == 40){
+		}else if(ev.keyCode === 40){
 			console.log("[KeyPressed] Down arrow clicked");
 		}else{
 			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();
@@ -236,7 +236,7 @@ class Keyboard extends React.Component {
 			}else{
 
 			}
-			if(i==0){
+			if(i===0){
 				//console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
 			}
 //			console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
