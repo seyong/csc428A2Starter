@@ -43,6 +43,7 @@ class Keyboard2 extends React.Component {
 		// this configuration is from original zoomboard code
 		this.keyboardImg = null;
 		this.env = {
+			keymaps: [keys, keys_sym],
 			keyboardNames: ["ZB","#"],
 			zoomFactor: 2.2,
 			originalScale: 0.12,
@@ -53,15 +54,14 @@ class Keyboard2 extends React.Component {
 			animTime: 0.1,
 			minSwipeX: 40,
 			minSwipeY: 30,
-			maxKeyErrorDistance: 2,
+			max_key_error_distance: 2,
 			useRealKeyboard: true
 		}
 
 		this._onTouchStart = this._onTouchStart.bind(this);
-    	this._onTouchMove = this._onTouchMove.bind(this);
-    	this._onTouchEnd = this._onTouchEnd.bind(this);
-    	this._swipe = {};
-
+    this._onTouchMove = this._onTouchMove.bind(this);
+    this._onTouchEnd = this._onTouchEnd.bind(this);
+    this._swipe = {};
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -72,9 +72,17 @@ class Keyboard2 extends React.Component {
 	_onTouchStart(e) {
 		const touch = e.nativeEvent.touches[0];
 		this._swipe = { x: touch.clientX, y: touch.clentY };
-		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
-		//this.setState({ swiped: false });
-	}
+		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
+		this.setState({ swiped: false });
+		}
+
+		_onTouchMove(e) {
+			if (e.changedTouches && e.changedTouches.length) {
+				const touch = e.nativeEvent.changedTouches[0];
+				// console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
+				this._swipe.swiping = true;
+			}
+		}
 
 	_onTouchMove(e) {
 		if (e.changedTouches && e.changedTouches.length) {
@@ -229,7 +237,7 @@ class Keyboard2 extends React.Component {
 			//img.css -webkit-transition none
 			//img.css -webkit-transition all 0.001s ease-out
 		}
-		 console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
+		// console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
 		this.setState({
 			imgStyle:{
 				left:position.x,
@@ -251,7 +259,7 @@ class Keyboard2 extends React.Component {
 	onKeyClick = (e) => {
 		//e.preventDefault();
 		//e.stopPropagation();
-		console.log("[2Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+		// console.log("[2Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 
 		var currentZoomX = this.getXZoom();
 		var currentZoomY = this.getYZoom();
@@ -268,9 +276,9 @@ class Keyboard2 extends React.Component {
 		}else{
 			var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
 			var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
-			console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
-			console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			console.log("[Click before doZoom] xy => "+x + "/"+y);
+			// console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			// console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
@@ -289,20 +297,22 @@ class Keyboard2 extends React.Component {
 		var centerBias = this.env.centerBias;
 		var maxZoom = this.env.maxZoom;
 
-		const touch = e.nativeEvent.changedTouches[0];
-		console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
+		this.clearResetTimeout();
+
+		const touch = e.nativeEvent.changedTouches[0];//e.nativeEvent.changedTouches[0];
+		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
 		this.clearResetTimeout();
 		//Assuming mouse
 		if(this.env.isTouchEnabled){
 
 		}else{
 			//pageX includes scroll offset Value
-			console.log("[offset] - "+this.offsetLeft + "/" + this.offsetTop);
+			// console.log("[offset] - "+this.offsetLeft + "/" + this.offsetTop);
 			var x =  (touch.pageX - this.offsetLeft) / currentZoomX + this.viewport.x;
 			var y =  (touch.pageY - this.offsetTop) / currentZoomY + this.viewport.y;
 			//console.log("[Click before doZoom] touchXY => "+touch.clientX + "/"+touch.clientY);
-			console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			console.log("[Click before doZoom] xy => "+x + "/"+y);
+			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			// console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
@@ -320,7 +330,7 @@ class Keyboard2 extends React.Component {
 		//zoomtouch_event.x = x;, zoomtouch_event.y = y;
 		//this.element.trigger(zoomtouch_event);
 
-		console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
+		// console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
 		if(scaleFactor * currentZoomVal > maxZoom){
 			//console.log("Exceeded maxZoom ");
 			var key = this.getKeyChar({x:x,y:y});
@@ -353,6 +363,34 @@ class Keyboard2 extends React.Component {
 				y: biasedViewportY * (1-centerBias) + centeredY * centerBias,
 			});
 		}
+	}
+
+	getKeyChar(point) {
+		console.log("point.x: " + point.x + "; point.y: " + point.y);
+
+		var min_distance = false, min_distance_key = null;
+		var max_key_error_distance_squared = Math.pow(this.env.max_key_error_distance, 2);
+		console.log("max_key_error_distance_squared: " + max_key_error_distance_squared);
+
+		console.log("keys: " + keys);
+
+		for(var i = 0, len = keys.length; i<len; i++) {
+			var key = keys[i];
+			if(key.x <= point.x && key.y <= point.y && key.x+key.width >= point.x && key.y + key.height >= point.y) {
+				return key.key;
+			} else {
+				var key_center_x = key.x + key.width/2;
+				var key_center_y = key.y + key.height/2;
+				var dx = point.x - key_center_x;
+				var dy = point.y - key_center_y;
+				var dsquared = Math.pow(dx, 2) + Math.pow(dy, 2);
+				if((min_distance_key === null || dsquared < min_distance) && dsquared < max_key_error_distance_squared * Math.pow(Math.min(key.width, key.height), 2)) {
+					min_distance = dsquared;
+					min_distance_key = key;
+				}
+			}
+		}
+		return min_distance_key;
 	}
 
 	getXZoom = () =>{
