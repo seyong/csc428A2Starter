@@ -81,10 +81,11 @@ class Keyboard2 extends React.Component {
 
 	// mouse click event is handled here.
 	onPointerDown = (e) => {
-		console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
-		":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
-		console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
-		console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
+		//console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
+		//":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
+		console.log("[PointerDown] xy - "+e.nativeEvent.x + "/"+e.nativeEvent.y);
+		//console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
+		//console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
 		// use e.nativeEvent.offsetX,Y for accuracy
 		//var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
 		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
@@ -95,10 +96,11 @@ class Keyboard2 extends React.Component {
 	}
 
 	componentDidUpdate = () => {
-		console.log("componentDidUpdate");
+		console.log("========componentDidUpdate=======");
+		/*
 		window.setTimeout(() => {
 			console.log("timeout");
-		},500);
+		},500);*/
 	}
 
 	render(){
@@ -179,6 +181,7 @@ class Keyboard2 extends React.Component {
 	onKeyClick = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
+		console.log("[2Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 
 		var currentZoomX = this.getXZoom();
 		var currentZoomY = this.getYZoom();
@@ -195,6 +198,9 @@ class Keyboard2 extends React.Component {
 		}else{
 			var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
 			var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
+			console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+			console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
@@ -212,15 +218,19 @@ class Keyboard2 extends React.Component {
 		//zoomtouch_event.x = x;, zoomtouch_event.y = y;
 		//this.element.trigger(zoomtouch_event);
 
+		console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
 		if(scaleFactor * currentZoomVal > maxZoom){
-			var key = this.getKeyChar({x:x,y:y});
-			if(key !== null){
+			console.log("Exceeded maxZoom ");
+			//var key = this.getKeyChar({x:x,y:y});
+			
+			//if(key !== null){
 				//var zoomkey_event = jQuery.Event("zb_key");
 				//zoomkey_event.key = key.key;
 				//zoomkey_event.entry_type = "press";
 				//this.element.trigger(zoomkey_event);
 				//this.flashkey(zoomkey_event.key);	
-			}
+			//	console.log("[doZoom] Key is not null");
+			//}
 			this.reset();
 			return;
 		}else{
@@ -251,7 +261,7 @@ class Keyboard2 extends React.Component {
 		return this.position.height / this.original_dimensions.height;
 	}
 	getZoom = () => {
-		return Math.max(this.getXZoom, this.getYZoom);
+		return Math.max(this.getXZoom(), this.getYZoom());
 	}
 }
 
