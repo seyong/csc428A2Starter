@@ -53,7 +53,7 @@ class Keyboard2 extends React.Component {
 			centerBias: 0.05,
 			animTime: 0.1,
 			minSwipeX: 40,
-			minSwipeY: 30,
+			minSwipeY: 1,
 			max_key_error_distance: 2,
 			useRealKeyboard: true
 		}
@@ -62,6 +62,9 @@ class Keyboard2 extends React.Component {
     this._onTouchMove = this._onTouchMove.bind(this);
     this._onTouchEnd = this._onTouchEnd.bind(this);
     this._swipe = {};
+
+		this.startX = 0;
+		this.startY = 0;
 		// register Event
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
@@ -71,6 +74,8 @@ class Keyboard2 extends React.Component {
 
 	_onTouchStart(e) {
 		const touch = e.nativeEvent.touches[0];
+		this.startX = touch.clientX;
+		this.startY = touch.clientY;
 		this._swipe = { x: touch.clientX, y: touch.clentY };
 		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
 		this.setState({ swiped: false });
@@ -93,14 +98,65 @@ class Keyboard2 extends React.Component {
 	}
 
 	_onTouchEnd(e) {
-		//const touch = e.nativeEvent.changedTouches[0];
-		//if (this._swipe.swiping && Math.abs(touch.clientX - this._swipe.x) > this.minDistance ) {
-		//	this.props.onSwiped && this.props.onSwiped();
-		//	console.log("touch end x: " + touch.clientX + "; y: " + touch.clientY);
-			//this.setState({ swiped: true });
-		//}
-		//this._swipe = {};
-		this.onFingerTouch(e);
+		const touch = e.nativeEvent.changedTouches[0];
+		console.log(" touch.clientY: " +  touch.clientY + "; this._swipe.y: " + this._swipe.y);
+		var dx = touch.clientX - this.startX;
+		var dy = touch.clientY - this.startY;
+		console.log("dx: " + dx + "; dy: " + dy);
+		if (this._swipe.swiping) {
+			if(Math.abs(dx) > this.env.minSwipeX){
+				if(dx > 0){
+					//swipe to the right
+					this.onSwipe("right");
+					console.log("right");
+				}
+				else if(dx < 0){
+					//swipe to the Left
+					this.onSwipe("left");
+					console.log("left");
+				}
+			}
+			else if(Math.abs(dy) > this.env.minSwipeY){
+				if(dy > 0){
+					//swipe down
+					this.onSwipe("down");
+					console.log("swipe down");
+				}
+				else if(dy < 0) {
+					//swipe up
+					this.onSwipe("up");
+					console.log("swipe up");
+				}
+			}
+			this.props.onSwiped && this.props.onSwiped();
+			console.log("touch end x: " + touch.clientX + "; y: " + touch.clientY);
+			this.setState({ swiped: true });
+		}
+		else{
+			this.onFingerTouch(e);
+		}
+			this._swipe = {};
+	}
+
+	onSwipe(direction){
+		if(direction == "left"){
+			var key = "delete";
+			this.props.callback(key);
+		}
+		else if(direction == "right"){
+		}
+		else if(direction == "up"){
+			var imgSrc = document.getElementById("keyboardtype").src;
+			console.log("imgSrc: " + imgSrc);
+			if( imgSrc.split("/")[imgSrc.split("/").length - 1] == "ZoomBoard3b.png"){
+				document.getElementById("keyboardtype").src = "/images/symbols3b.png";
+			}
+			else{
+				document.getElementById("keyboardtype").src =  "/images/ZoomBoard3b.png";
+			}
+		}
+		else if(direction == "down"){
+		}
 	}
 
 	// When the image is loaded, we recalculate the img size to fit into our
@@ -193,7 +249,7 @@ class Keyboard2 extends React.Component {
 					onTouchStart={this._onTouchStart}
 					onTouchMove={this._onTouchMove}
 					onTouchEnd={this._onTouchEnd}>
-				<img src="/images/ZoomBoard3.png" className="KB" alt="kb" onLoad={this.onLoad}
+				<img id="keyboardtype" src="/images/ZoomBoard3b.png" className="KB" alt="kb" onLoad={this.onLoad}
 							style={this.state.imgStyle}/>
 				<div className="overlay" style={overlayStyle} dangerouslySetInnerHTML={{__html: this.state.overlayText}}>
 				</div>
