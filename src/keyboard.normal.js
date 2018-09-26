@@ -147,12 +147,17 @@ class KeyboardNormal extends React.Component {
 			width:img.naturalWidth, 
 			height:img.naturalHeight
 		};
+
+		// Change React state is asynchronous, 
+		// 	to sync the change of the state and function call, pass the function as a parameter.
 		this.setState({
 			originalDimensions:{
 				width:img.naturalWidth,
 				height:img.naturalHeight
 			}
 		},this.reset);
+
+		//
 		if(this.displaySize !== undefined){
 			this.config.originalScale = this.displaySize.width/this.originalDimensions.width;
 			/*
@@ -160,7 +165,6 @@ class KeyboardNormal extends React.Component {
 				originalScale:this.displaySize.width/this.original_dimensions.width
 			});*/
 		}
-		//this.reset();
 	}
 
 	onKeyDown = (ev) => {
@@ -358,7 +362,7 @@ class KeyboardNormal extends React.Component {
 		//console.log("Poitn Event => "+ pt.x + "/" + pt.y);
 		var minDistance = false, minDistanceKey = null;
 		var maxKeyErrorDistSquared = Math.pow(this.config.maxKeyErrorDistance,2);
-		var keys = Keymaps.keys;
+		var keys = (this.state.keyboardImg === this.imgs[0])? Keymaps.keys : Keymaps.keys_sym;
 		//console.log(Keymaps.keys.keys);
 		for(var i=0, len = keys.length; i<len; i++){
 			var keychar = keys[i];
@@ -402,7 +406,6 @@ class KeyboardNormal extends React.Component {
 
 	flashKey = (key) => {
 		if(key === "delete") {
-			//this.flash("&#9224;");
 			this.flash("&#x232B");
 		} else if(key === "enter") {
 			this.flash("&#9252;");
@@ -423,12 +426,12 @@ class KeyboardNormal extends React.Component {
 			},
 			overlayText: text
 		});
-		setTimeout(
-			function() {
+		this.flashTimeout = setTimeout(
+			(() => {
 				this.setState({
 				overlayStyle:{
 					opacity: 0}})
-			}
+			})
 			.bind(this),
 			duration
 		);
