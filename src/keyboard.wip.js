@@ -1,141 +1,45 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {keys,keys_sym} from './keys.js'
+import Keymaps from './keys.js'
+import Keyboard from './keyboard.normal.js'
 
 // Keyboard2,
 //
-class Keyboard2 extends React.Component {
+class KeyboardZoom extends Keyboard {
 
 	// Constructor, normal constructor in java
 	constructor(props){
 		super(props);
-		// this is the state variables, which is very special in React.
-		// In react, once the state variables has changed by calling setState(),
-		// render() function is followed.
-		// this.props is the property passing by their parent DOM in this case,
-		// Watch class
-
-		// Please have a look doZoom, setViewport, and setPosition functions
-		this.state ={
-		 swiped: false,
-		 original_position: {x:0,y:0,width:0,height:0}, //ignore
-		 original_dimensions: {width:0, height:0}, //ignore
-		 font_size: 0, // haven't use
-		 // When user touch or click, imgStyle value has changes so that
-		 // 	the class re-render their html componenets
-		 imgStyle :{
-			 left:0,top:0,
-			 width: this.props.width,
-			 height: this.props.height
-		 },
-		 overlayStyle : {
-			 opacity: 0,
-			 color: "white"
-		 },
-		 overlayText : ""
-		};
-
-		this.in_starting_position =  true;
-		this.original_position = {x:0,y:0};
-		this.original_dimensions = {width:0,height:0};
-		this.displaySize = this.props.displaySize;
-
-		// this configuration is from original zoomboard code
-		this.keyboardImg = null;
-		this.env = {
-			keymaps: [keys, keys_sym],
-			keyboardNames: ["ZB","#"],
-			zoomFactor: 2.2,
-			originalScale: 0.12,
-			maxZoom: 1.0,
-			resetOnMaxZoom: true,
+		this.config.zoomFactor = 2.2;
+		this.config.originalScale = 0.12;
+		this.config.maxZoom = 1.0;
+		this.config.resetOnMaxZoom =  true,
+		this.config.centerBias = 0.05
+		/*
+		this.config = {
 			resetTimeout: 1000,
-			centerBias: 0.05,
 			animTime: 0.1,
+			useRealKeyboard: true,
+			maxKeyErrorDistance: 2,
 			minSwipeX: 40,
-			minSwipeY: 1,
-			max_key_error_distance: 2,
-			useRealKeyboard: true
-		}
-
-		this._onTouchStart = this._onTouchStart.bind(this);
-    this._onTouchMove = this._onTouchMove.bind(this);
-    this._onTouchEnd = this._onTouchEnd.bind(this);
-    this._swipe = {};
-
-		this.startX = 0;
-		this.startY = 0;
-		// register Event
-		this.onLoad = this.onLoad.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
-		this.onPointerDown = this.onPointerDown.bind(this);
+			minSwipeY: 1
+		}*/
+		console.log(this.config);
 	}
 
-
-	_onTouchStart(e) {
-		const touch = e.nativeEvent.touches[0];
-		this.startX = touch.clientX;
-		this.startY = touch.clientY;
-		this._swipe = { x: touch.clientX, y: touch.clentY };
-		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
-		this.setState({ swiped: false });
-		}
-
-		_onTouchMove(e) {
-			if (e.changedTouches && e.changedTouches.length) {
-				const touch = e.nativeEvent.changedTouches[0];
-				// console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
-				this._swipe.swiping = true;
-			}
-		}
-
-	_onTouchMove(e) {
-		if (e.changedTouches && e.changedTouches.length) {
-			const touch = e.nativeEvent.changedTouches[0];
-			console.log("touch move x: " + touch.clientX + "; y: " + touch.clientY);
-			this._swipe.swiping = true;
-		}
-	}
-
-	_onTouchEnd(e) {
-		const touch = e.nativeEvent.changedTouches[0];
-		console.log(" touch.clientY: " +  touch.clientY + "; this._swipe.y: " + this._swipe.y);
-		var dx = touch.clientX - this.startX;
-		var dy = touch.clientY - this.startY;
-		console.log("dx: " + dx + "; dy: " + dy);
-		if (this._swipe.swiping) {
-			if(Math.abs(dx) > this.env.minSwipeX){
-				if(dx > 0){
-					//swipe to the right
-					this.onSwipe("right");
-					console.log("right");
-				}
-				else if(dx < 0){
-					//swipe to the Left
-					this.onSwipe("left");
-					console.log("left");
-				}
-			}
-			else if(Math.abs(dy) > this.env.minSwipeY){
-				if(dy > 0){
-					//swipe down
-					this.onSwipe("down");
-					console.log("swipe down");
-				}
-				else if(dy < 0) {
-					//swipe up
-					this.onSwipe("up");
-					console.log("swipe up");
-				}
-			}
-			this.props.onSwiped && this.props.onSwiped();
-			console.log("touch end x: " + touch.clientX + "; y: " + touch.clientY);
-			this.setState({ swiped: true });
-		}
-		else{
-			this.onFingerTouch(e);
-		}
-			this._swipe = {};
+	onPointerDown = (e) => {
+		//console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
+		//":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
+		console.log("[PointerDown] xy - "+e.nativeEvent.x + "/"+e.nativeEvent.y);
+		//console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
+		//console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
+		// use e.nativeEvent.offsetX,Y for accuracy
+		//var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
+		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
+		//this.getKeyChar({x:x,y:y});
+		this.onKeyClick(e);
+		//e.preventDefault();
+		//e.stopPropagation();
 	}
 
 	onSwipe(direction){
@@ -157,63 +61,6 @@ class Keyboard2 extends React.Component {
 		}
 		else if(direction == "down"){
 		}
-	}
-
-	// When the image is loaded, we recalculate the img size to fit into our
-	// 	fixed width and height
-	onLoad({target:img}){
-		console.log("image naturalSize: "+img.naturalWidth+":"+img.naturalHeight);
-		this.original_dimensions = {width : img.naturalWidth, height:img.naturalHeight};
-		console.log("[onLoad]  - "+this.original_dimensions.width+":"+this.original_dimensions.height);
-		this.env.originalScale = this.displaySize.width/this.original_dimensions.width;
-		this.setState({original_scale:
-							this.displaySize.width/this.original_dimensions.width});
-		this.reset();
-	}
-
-	onKeyDown = (ev) => {
-		console.log("Key pressed: " + ev.key + "/" +ev.keyCode);
-		if(ev.keyCode === 37){
-			console.log("[KeyPressed] Left arrow clicked");
-		}else if(ev.keyCode === 38){
-			console.log("[KeyPressed] Top arrow clicked");
-		}else if(ev.keyCode === 39){
-			console.log("[KeyPressed] Right arrow clicked");
-		}else if(ev.keyCode === 40){
-			console.log("[KeyPressed] Down arrow clicked");
-		}else{
-			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();
-			if(ev.keyCode === 8){
-				ev.returnValue = false;
-				ev.cancleBubble = true;
-				key = "delete";
-			}else if(ev.keyCode === 13){
-				key = "Enter";
-			}
-			// trigger
-			this.props.callback(key);
-			// flash
-			this.flashKey(key);
-			ev.preventDefault();
-			ev.stopPropagation();
-			return false;
-		}
-	}
-
-	// mouse click event is handled here.
-	onPointerDown = (e) => {
-		//console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
-		//":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
-		console.log("[PointerDown] xy - "+e.nativeEvent.x + "/"+e.nativeEvent.y);
-		//console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
-		//console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
-		// use e.nativeEvent.offsetX,Y for accuracy
-		//var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
-		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
-		//this.getKeyChar({x:x,y:y});
-		this.onKeyClick(e);
-		//e.preventDefault();
-		//e.stopPropagation();
 	}
 
 	componentDidUpdate = () => {
@@ -245,11 +92,12 @@ class Keyboard2 extends React.Component {
 		console.log("[render] " +size.width);
 		return(
 			<div className="container" style={style} onKeyDown={this.onKeyDown} tabIndex="0"
-					onMouseDown = {this.onMouseDown} onPointerDown = {this.onPointerDown}
+					onPointerDown = {this.onPointerDown}
 					onTouchStart={this._onTouchStart}
 					onTouchMove={this._onTouchMove}
 					onTouchEnd={this._onTouchEnd}>
-				<img id="keyboardtype" src="/images/ZoomBoard3b.png" className="KB" alt="kb" onLoad={this.onLoad}
+				<img id="keyboardtype" className="KB" alt="kb"
+					src="/images/ZoomBoard3b.png"  onLoad={this.onLoad}
 							style={this.state.imgStyle}/>
 				<div className="overlay" style={overlayStyle} dangerouslySetInnerHTML={{__html: this.state.overlayText}}>
 				</div>
@@ -257,60 +105,6 @@ class Keyboard2 extends React.Component {
 		)
 	}
 
-	getWindowDimension = () => {
-		return {
-			width: this.original_dimensions.width * this.env.originalScale,
-			height: this.original_dimensions.height * this.env.originalScale
-		};
-	}
-
-	reset = (animated) => {
-		// console.log("[Reset] reser called.. originDim - "+this.original_dimensions.width+":"+this.original_dimensions.height);
-		this.setViewPort({x:0 , y:0, width: this.original_dimensions.width, height:this.original_dimensions.height},
-			animated === true);
-		this.clearResetTimeout();
-		this.in_starting_position = true;
-	}
-
-	setViewPort = (viewport,animated) =>{
-		var windowDim = this.getWindowDimension();
-		var scale_x = windowDim.width/viewport.width;
-		var scale_y = windowDim.height/viewport.height;
-		// console.log("windowDim - "+windowDim.width +":"+windowDim.height);
-		// console.log("[setViewport] called.. originDim - "+viewport.width+":"+viewport.height);
-		// console.log("Scale XY - "+scale_x +":"+scale_y);
-		var width = scale_x * this.original_dimensions.width;
-		var height = scale_y * this.original_dimensions.height;
-		var x = -1 * viewport.x * scale_x;
-		var y = -1 * viewport.y * scale_y;
-
-		this.setPosition({x:x,y:y,width:width,height:height},animated);
-		this.viewport = viewport;
-	}
-
-	setPosition = (position,animated) => {
-		if(animated === false){
-			//img.css -webkit-transition none
-			//img.css -webkit-transition all 0.001s ease-out
-		}
-		// console.log("Left/Top/Width/Height: "+position.x+"/"+position.y+"/"+position.width+"/"+position.height);
-		this.setState({
-			imgStyle:{
-				left:position.x,
-				top:position.y,
-				width:position.width,
-				height:position.height
-			}
-		})
-		this.position = position;
-	}
-
-	clearResetTimeout = () => {
-		if(this.resetTimeout !== undefined){
-			window.clearTimeout(this.resetTimeout);
-		}
-		this.resetTimeout = undefined;
-	}
 
 	onKeyClick = (e) => {
 		//e.preventDefault();
@@ -321,20 +115,22 @@ class Keyboard2 extends React.Component {
 		var currentZoomY = this.getYZoom();
 		var currentZoomVal = this.getZoom();
 
-		var scaleFactor = this.env.zoomFactor;
-		var centerBias = this.env.centerBias;
-		var maxZoom = this.env.maxZoom;
+		var scaleFactor = this.config.zoomFactor;
+		var centerBias = this.config.centerBias;
+		var maxZoom = this.config.maxZoom;
+		console.log("in WIP - " +this.config.zoomFactor + ":" + this.config.centerBias);
 
 		this.clearResetTimeout();
 		//Assuming mouse
-		if(this.env.isTouchEnabled){
+		if(this.config.gisTouchEnabled){
 			console.log("true");
 		}else{
+			console.log("viewport in wip: "+this.viewport.width + ":"+this.viewport.height);
 			var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
 			var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
-			// console.log("[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
-			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			// console.log("[Click before doZoom] xy => "+x + "/"+y);
+			 console.log("WIP[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+			 console.log("WIP[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			 console.log("WIP[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
@@ -349,9 +145,9 @@ class Keyboard2 extends React.Component {
 		var currentZoomY = this.getYZoom();
 		var currentZoomVal = this.getZoom();
 
-		var scaleFactor = this.env.zoomFactor;
-		var centerBias = this.env.centerBias;
-		var maxZoom = this.env.maxZoom;
+		var scaleFactor = this.config.zoomFactor;
+		var centerBias = this.config.centerBias;
+		var maxZoom = this.config.maxZoom;
 
 		this.clearResetTimeout();
 
@@ -359,7 +155,7 @@ class Keyboard2 extends React.Component {
 		// console.log("touch start x: " + touch.clientX + "; y: " + touch.clientY);
 		this.clearResetTimeout();
 		//Assuming mouse
-		if(this.env.isTouchEnabled){
+		if(this.config.isTouchEnabled){
 
 		}else{
 			//pageX includes scroll offset Value
@@ -377,7 +173,7 @@ class Keyboard2 extends React.Component {
 
 	resetTimeoutFunc =  () => {
 		this.clearResetTimeout();
-		var resetTimeout = this.env.resetTimeout;
+		var resetTimeout = this.config.resetTimeout;
 		this.resetTimeout = window.setTimeout(this.reset,resetTimeout);
 	}
 
@@ -395,7 +191,7 @@ class Keyboard2 extends React.Component {
 				//this.element.trigger(zoomkey_event);
 				//this.flashkey(zoomkey_event.key);
 				console.log("[doZoom] Key is not null");
-				this.props.callback(key);
+				this.props.onKeyCharReceived(key);
 				this.flashKey(key);
 			}
 			this.reset();
@@ -412,6 +208,11 @@ class Keyboard2 extends React.Component {
 										this.viewport.width;
 			var biasedViewportY = y- (newViewportHeight * (y - this.viewport.y))/
 										this.viewport.height;
+			console.log("doZoom in wip: "+this.viewport.width + ":"+this.viewport.height);
+			console.log("doZoom in wip: "+this.viewport.x + ":"+this.viewport.y);
+			console.log("doZoom in wip: "+scaleFactor);
+			console.log("doZoom in wip: "+newViewportWidth+ ":"+newViewportHeight);
+			console.log("doZoom in wip: "+centeredX + ":" + centeredY);
 			this.setViewPort({
 				width: newViewportWidth,
 				height: newViewportHeight,
@@ -423,13 +224,10 @@ class Keyboard2 extends React.Component {
 
 	getKeyChar(point) {
 		console.log("point.x: " + point.x + "; point.y: " + point.y);
-
 		var min_distance = false, min_distance_key = null;
-		var max_key_error_distance_squared = Math.pow(this.env.max_key_error_distance, 2);
+		var max_key_error_distance_squared = Math.pow(this.config.max_key_error_distance, 2);
 		console.log("max_key_error_distance_squared: " + max_key_error_distance_squared);
-
-		console.log("keys: " + keys);
-
+		var keys = Keymaps.keys;
 		for(var i = 0, len = keys.length; i<len; i++) {
 			var key = keys[i];
 			if(key.x <= point.x && key.y <= point.y && key.x+key.width >= point.x && key.y + key.height >= point.y) {
@@ -442,7 +240,7 @@ class Keyboard2 extends React.Component {
 				var dsquared = Math.pow(dx, 2) + Math.pow(dy, 2);
 				if((min_distance_key === null || dsquared < min_distance) && dsquared < max_key_error_distance_squared * Math.pow(Math.min(key.width, key.height), 2)) {
 					min_distance = dsquared;
-					min_distance_key = key;
+					min_distance_key = key.key;
 				}
 			}
 		}
@@ -458,30 +256,6 @@ class Keyboard2 extends React.Component {
 	getZoom = () => {
 		return Math.max(this.getXZoom(), this.getYZoom());
 	}
-
-	getKeyChar = (pt) => {
-		//console.log("Key Event");
-		//var keys = this.env.keymaps.keys;
-		//console.log("Key Event: " + keys.length);
-		//console.log("Poitn Event => "+ pt.x + "/" + pt.y);
-		var minDistance = false, minDistanceKey = null;
-		var maxKeyErrorDistSquared = Math.pow(this.env.maxKeyErrorDistance,2);
-		for(var i=0, len = keys.length; i<len; i++){
-			var keychar = keys[i];
-			if(keychar.x <= pt.x && keychar.y <= pt.y && keychar.x + keychar.width >= pt.x && keychar.y + keychar.height >= pt.y)
-			{
-				console.log("[" + keychar.key + "] pressed ");
-				return keychar.key;
-			}else{
-
-			}
-			if(i===0){
-				//console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
-			}
-//			console.log("Key Char info [" + keychar.key +"] => " + keychar.x + "/" + keychar.y + "/" + keychar.width + "/"+keychar.height);
-		}
-	}
-
 
 	flash = (text, duration, color) => {
 		duration = duration || 250;
@@ -519,4 +293,4 @@ class Keyboard2 extends React.Component {
 	}
 }
 
-export default Keyboard2;
+export default KeyboardZoom;

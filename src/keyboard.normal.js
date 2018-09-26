@@ -4,7 +4,7 @@ import Keymaps from './keys.js';
 
 // Normal Keyboard
 // Keyboard component renders a keyboard layout
-class Keyboard extends React.Component {
+class KeyboardNormal extends React.Component {
 
 	// Constructor
 	constructor(props){
@@ -13,7 +13,7 @@ class Keyboard extends React.Component {
 		//set React State variables
 		this.state ={
 			font_size: 0,
-        	origin_scale: this.props.origin_scale,
+        	originalScale: this.props.originalScale,
 			swiped: false,
 			imgStyle : {
 				left:0, top:0,
@@ -24,50 +24,70 @@ class Keyboard extends React.Component {
 				opacity: 0,
 				color: "white"
 			},
-			overlayText : ""
+			overlayText : "",
+			originalDimensions : {width:0, height:0}
 		};
 
-		if(this.props.onKeyClick !== undefined){
-			this.onKeyClick = this.props.onKeyClick;
-		}
-		if(this.props.onFingerTouch !== undefined){
-			this.onFingerTouch = this.props.onFingerTouch;
-		}
-		this.in_starting_position = true;
-        this.original_position =  {x:0,y:0};
-		this.original_dimensions = {width:0, height:0};
+		// Following variables are necessary for rendering, but since they are not
+		// 	directly affect the rendering process, we are not going to set them as React States
+		//	React State affects UI rendering directly, which means , everytime your react state has changed
+		// 	by caling setState({}), render() function will be called.
+		this.inStartingPosition = true;
+        this.originalPosition =  {x:0,y:0};
+		this.originalDimensions = {width:0, height:0};
 		this.displaySize = this.props.displaySize;
-
 		this.keyboardImg = null;
+		this._swipe = {};
+		this.startX = 0.0;
+		this.startY = 0.0;
+
+		// Keyboard configuration settings
 		this.config = {
 			resetTimeout: 1000,
 			animTime: 0.1,
 			useRealKeyboard: true,
 			maxKeyErrorDistance: 2,
 			minSwipeX: 40,
-			minSwipeY: 1
+			minSwipeY: 1,
+			originalScale: this.props.originalScale
 		}
+
 		// register EventListener
 		this.onLoad = this.onLoad.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
-		this.onPointerDown = this.onPointerDown.bind(this);
 
-		this._onTouchStart = this._onTouchStart.bind(this);
-		this._onTouchMove = this._onTouchMove.bind(this);
-		this._onTouchEnd = this._onTouchEnd.bind(this);
-		this._swipe = {};
-		this.startX = 0;
-		this.startY = 0;
+		// Check if PointerEvent is supported.
+		// PointerEvent is recommended for Chrome (> v55), Edge.
+		// Mouse&TouchEvent are recommended for other browsers.
+		console.log("Is PointerEvent supported? "+window.PointerEvent);
+		console.log(this.startX);
+		//this.props.onKeyCharReceived(window.PointerEvent);
+		if(window.PointerEvent){
+			this.onPointerUp = this.onPointerUp.bind(this);
+			this.onTouchStart = this.onTouchStart.bind(this);
+			this._onTouchMove = this._onTouchMove.bind(this);
+			this._onTouchEnd = this._onTouchEnd.bind(this);
+		}else{
+			this.onTouchStart = this.onTouchStart.bind(this);
+			this.onMouseDown = this.onMouseDown.bind(this);
+			this._onTouchMove = this._onTouchMove.bind(this);
+			this._onTouchEnd = this._onTouchEnd.bind(this);
+		}
 	}
 
 
+	//====
 	// Touch EventHandler
-	_onTouchStart(e) {
-		const touch = e.touches[0];
+	//====
+	onTouchStart(e) {
+		const touch = e.nativeEvent.touches[0];
+		console.log("[OnTouchStart]: "+this.inStartingPosition);
+		console.log("[OnTouchStart]: "+touch.clientX);
 		this.startX = touch.clientX;
 		this.startY = touch.clientY;
 		this._swipe = { x: touch.clientX, Y:touch.clientY };
 		this.setState({ swiped: false });
+		e.stopPropagation();
 	}
 
 	_onTouchMove(e) {
@@ -75,6 +95,8 @@ class Keyboard extends React.Component {
 			const touch = e.nativeEvent.changedTouches[0];
 			this._swipe.swiping = true;
 		}
+		e.stopPropagation();
+		
 	}
 
 	_onTouchEnd(e) {
@@ -103,13 +125,7 @@ class Keyboard extends React.Component {
 			this.onKeyClick(e);
 		}
 		this._swipe = {};
-		/*
-		const absX = Math.abs(touch.clientX - this._swipe.x);
-		if (this._swipe.swiping && absX > this.minDistance ) {
-			this.props.onSwiped && this.props.onSwiped();
-			this.setState({ swiped: true });
-		}
-		this._swipe = {};*/
+		e.stopPropagation();
 	}
 
 	onSwipe = (direction) => {
@@ -118,21 +134,31 @@ class Keyboard extends React.Component {
 			this.props.onKeyCharReceived(key);
 		}else if(direction === "up"){
 			//change keyboard image
+			console.log("Change keyboard")
 		}
 		// "down", "right" haven't assigned
 	}
 
 	onLoad({target:img}){
 		console.log("[onLoad] image naturalSize: "+img.naturalWidth+":"+img.naturalHeight);
-		this.original_dimensions = {
+		this.originalDimensions = {
 			width:img.naturalWidth, 
 			height:img.naturalHeight
 		};
-		this.config.originalScale = this.displaySize.width/this.original_dimensions.width;
 		this.setState({
-			origin_scale:this.displaySize.width/this.original_dimensions.width
-		});
-		this.reset();
+			originalDimensions:{
+				width:img.naturalWidth,
+				height:img.naturalHeight
+			}
+		},this.reset);
+		if(this.displaySize !== undefined){
+			this.config.originalScale = this.displaySize.width/this.originalDimensions.width;
+			/*
+			this.setState({
+				originalScale:this.displaySize.width/this.original_dimensions.width
+			});*/
+		}
+		//this.reset();
 	}
 
 	onKeyDown = (ev) => {
@@ -164,12 +190,33 @@ class Keyboard extends React.Component {
 		}
 	}
 
-	onPointerDown = (e) => {
+	onPointerUp(e){
 		// use e.nativeEvent.offsetX,Y for accuracy
-		var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
-		var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
+		//var x = e.nativeEvent.offsetX / (this.position.width/this.originalDimensions.width);
+		//var y = e.nativeEvent.offsetY / (this.position.height/this.originalDimensions.height);
+		var x = e.nativeEvent.offsetX / (this.position.width/this.state.originalDimensions.width);
+		var y = e.nativeEvent.offsetY / (this.position.height/this.state.originalDimensions.height);
+		console.log("[onPointerDown] xy: "+ x + ":" + y);
+		console.log("[onPointerDown] position: "+ this.position.x + ":" + this.position.y);
+		this.onKeyClick({x:x,y:y});
+		//e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}
+
+	onMouseDown(e) {
+		// use e.nativeEvent.offsetX,Y for accuracy
+		//var x = e.nativeEvent.offsetX / (this.position.width/this.originalDimensions.width);
+		//var y = e.nativeEvent.offsetY / (this.position.height/this.originalDimensions.height);
+		console.log(window.PointerEvent);
+		console.log(window.MouseEvent);
+		var x = e.nativeEvent.offsetX / (this.position.width/this.state.originalDimensions.width);
+		var y = e.nativeEvent.offsetY / (this.position.height/this.state.originalDimensions.height);
+		console.log("[onMouseDown] xy: "+ x + ":" + y);
+		console.log("[onMouseDown] position: "+ this.position.x + ":" + this.position.y);
 		this.onKeyClick({x:x,y:y});
 	}
+
 
 	componentDidUpdate = () => {
 		this.offsetTop = ReactDOM.findDOMNode(this).offsetTop;
@@ -189,50 +236,88 @@ class Keyboard extends React.Component {
 			color: this.state.overlayStyle.color,
 			fontSize:(size.height/1.2)+"px"
 		};
-		//console.log(overlayStyle);
 		const fontHeight = {
 			fontSize : size.height/1.2
 		}
+		const imgStyle = {
+			width:size.width,
+			height:size.height,
+			top: this.state.top,
+			left: this.state.left
+		}
 		console.log("[Rendering...] ");
-		return(
-			<div className="container" style = {style} tabIndex="0"
-					onKeyDown={this.onKeyDown}
-					onPointerDown = {this.onPointerDown}
-					onTouchStart={this._onTouchStart}
-					onTouchMove={this._onTouchMove}
-					onTouchEnd={this._onTouchEnd}>
-				<img id="keyboardtype" className="KB" alt="kb"
-					src="/images/ZoomBoard3b.png" onLoad={this.onLoad}
-					style={this.state.imgStyle}/>
-				<div className="overlay" 
-					style={overlayStyle}
-					dangerouslySetInnerHTML={{
-						__html: this.state.overlayText
-					}}></div>
-			</div>
-		)
+		if(window.PointerEvent){
+			return(
+				<div className="container" style = {style} tabIndex="-1"
+						onKeyDown={this.onKeyDown}
+						onTouchStart={this.onTouchStart}
+						onTouchMove={this._onTouchMove}
+						onTouchEnd={this._onTouchEnd}
+						onPointerUp = {this.onPointerUp}>
+					<img id="keyboardtype" className="KB" alt="kb"
+						src="/images/ZoomBoard3b.png" onLoad={this.onLoad}
+						style={imgStyle}/>
+					<div className="overlay" 
+						style={overlayStyle}
+						dangerouslySetInnerHTML={{
+							__html: this.state.overlayText
+						}}></div>
+				</div>
+			)
+		}else{
+			return(
+				<div className="container" style = {style} tabIndex="-1"
+						onKeyDown={this.onKeyDown}
+						onMouseDown = {this.onMouseDown}
+						onTouchStart={this._onTouchStart}
+						onTouchMove={this._onTouchMove}
+						onTouchEnd={this._onTouchEnd}>
+					<img id="keyboardtype" className="KB" alt="kb"
+						src="/images/ZoomBoard3b.png" onLoad={this.onLoad}
+						style={imgStyle}/>
+					<div className="overlay" 
+						style={overlayStyle}
+						dangerouslySetInnerHTML={{
+							__html: this.state.overlayText
+						}}></div>
+				</div>
+			)
+		}
+		
 	}
 
 	reset = (animated) => {
+		console.log("call reset...");
 		this.setViewPort({
 			x:0 , y:0, 
-			width: this.original_dimensions.width, 
-			height:this.original_dimensions.height
+			//width: this.originalDimensions.width, 
+			//height:this.originalDimensions.height
+			width: this.state.originalDimensions.width, 
+			height:this.state.originalDimensions.height
 			},animated === true);
 		this.clearResetTimeout();
-		this.in_starting_position = true;
+		this.inStartingPosition = true;
 	}
 
 	setViewPort = (viewport,animated) =>{
 		console.log("Entering setViewPort()");
 		var windowDim = this.getWindowDimension();
-		var scale_x = windowDim.width/viewport.width;
-		var scale_y = windowDim.height/viewport.height;
-		var width = scale_x * this.original_dimensions.width;
-		var height = scale_y * this.original_dimensions.height;
-		var x = -1 * viewport.x * scale_x;
-		var y = -1 * viewport.y * scale_y;
+		console.log("winDim: "+windowDim.width + ":"+windowDim.height);
+		console.log("viewport: "+viewport.width + ":"+viewport.height);
+		var scaleX = windowDim.width/viewport.width;
+		var scaleY = windowDim.height/viewport.height;
+		console.log("scale: "+scaleX + ":"+scaleY);
+		//var width = scaleX * this.originalDimensions.width;
+		//var height = scaleY * this.originalDimensions.height;
+		var width = scaleX * this.state.originalDimensions.width;
+		var height = scaleY * this.state.originalDimensions.height;
+		var x = -1 * viewport.x * scaleX;
+		var y = -1 * viewport.y * scaleY;
+		console.log("xy: "+viewport.x + ":"+viewport.y);
+		console.log("xy: "+scaleX + ":"+scaleY);
+		console.log("xy: "+x + ":"+y);
 
+		console.log(x+":"+y+":"+width+":"+height);
 		this.setPosition({x:x,y:y,width:width,height:height},animated);
 		this.viewport = viewport;
 	}
@@ -245,22 +330,22 @@ class Keyboard extends React.Component {
 	}
 
 	onKeyClick = (pt) => {
-		//this.clearResetTimeout();
 		var key = this.getKeyChar(pt);
 		if(key != null){
 			console.log("[Key Presseed] "+key);
 			this.props.onKeyCharReceived(key);
 			this.flashKey(key);
 		}
-		//this.resetTimeoutFunc();
-		//Assuming mouse
 		return false;
 	}
 
 	getWindowDimension = () => {
+		console.log("Scale: "+this.config.originalScale)
 		return {
-			width: this.original_dimensions.width * this.config.originalScale,
-			height: this.original_dimensions.height * this.config.originalScale
+			//width: this.originalDimensions.width * this.config.originalScale,
+			//height: this.originalDimensions.height * this.config.originalScale
+			width: this.state.originalDimensions.width * this.config.originalScale,
+			height: this.state.originalDimensions.height * this.config.originalScale
 		};
 	}
 
@@ -348,4 +433,4 @@ class Keyboard extends React.Component {
 	}
 }
 
-export default Keyboard;
+export default KeyboardNormal;

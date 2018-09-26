@@ -1,4 +1,8 @@
 import React from 'react'
+
+// FileName: textarea.js
+// Description:
+//  This js file implments div where your input character is being displayed .
 class TextArea extends React.Component{
     constructor(props){
         super(props);
@@ -7,6 +11,7 @@ class TextArea extends React.Component{
         }
     }
 
+    // This will be called, everytime this props' value has changed. 
     componentWillReceiveProps= (nextProps) => {
         var c = nextProps.inputChar;
         var displayText = this.state.text;
