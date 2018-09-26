@@ -24,6 +24,7 @@ class KeyboardNormal extends React.Component {
 				opacity: 0,
 				color: "white"
 			},
+			keyboardImg : "/images/ZoomBoard3b.png",
 			overlayText : "",
 			originalDimensions : {width:0, height:0}
 		};
@@ -33,10 +34,10 @@ class KeyboardNormal extends React.Component {
 		//	React State affects UI rendering directly, which means , everytime your react state has changed
 		// 	by caling setState({}), render() function will be called.
 		this.inStartingPosition = true;
+		this.imgs = ["/images/ZoomBoard3b.png","/images/symbols3b.png"];
         this.originalPosition =  {x:0,y:0};
 		this.originalDimensions = {width:0, height:0};
 		this.displaySize = this.props.displaySize;
-		this.keyboardImg = null;
 		this._swipe = {};
 		this.startX = 0.0;
 		this.startY = 0.0;
@@ -81,8 +82,6 @@ class KeyboardNormal extends React.Component {
 	//====
 	onTouchStart(e) {
 		const touch = e.nativeEvent.touches[0];
-		console.log("[OnTouchStart]: "+this.inStartingPosition);
-		console.log("[OnTouchStart]: "+touch.clientX);
 		this.startX = touch.clientX;
 		this.startY = touch.clientY;
 		this._swipe = { x: touch.clientX, Y:touch.clientY };
@@ -121,7 +120,6 @@ class KeyboardNormal extends React.Component {
 			this.props.onSwiped && this.props.onSwiped();
 			this.setState({swiped:true});
 		}else{
-			//this.onFingerTouch(e);
 			this.onKeyClick(e);
 		}
 		this._swipe = {};
@@ -133,8 +131,12 @@ class KeyboardNormal extends React.Component {
 			var key = "delete";
 			this.props.onKeyCharReceived(key);
 		}else if(direction === "up"){
-			//change keyboard image
-			console.log("Change keyboard")
+			//change keyboard image here
+			var imgPath = (this.state.keyboardImg === this.imgs[0])? this.imgs[1] : this.imgs[0];
+			this.setState({
+				keyboardImg:imgPath 
+			})
+
 		}
 		// "down", "right" haven't assigned
 	}
@@ -255,7 +257,7 @@ class KeyboardNormal extends React.Component {
 						onTouchEnd={this._onTouchEnd}
 						onPointerUp = {this.onPointerUp}>
 					<img id="keyboardtype" className="KB" alt="kb"
-						src="/images/ZoomBoard3b.png" onLoad={this.onLoad}
+						src={this.state.keyboardImg} onLoad={this.onLoad}
 						style={imgStyle}/>
 					<div className="overlay" 
 						style={overlayStyle}
@@ -273,7 +275,7 @@ class KeyboardNormal extends React.Component {
 						onTouchMove={this._onTouchMove}
 						onTouchEnd={this._onTouchEnd}>
 					<img id="keyboardtype" className="KB" alt="kb"
-						src="/images/ZoomBoard3b.png" onLoad={this.onLoad}
+						src={this.state.keyboardImg} onLoad={this.onLoad}
 						style={imgStyle}/>
 					<div className="overlay" 
 						style={overlayStyle}
