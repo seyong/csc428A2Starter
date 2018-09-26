@@ -8,15 +8,6 @@ import Watch from './watch'
 // Description:
 //		Entry point of this React App.
 
-function download(text, name, type) {
-	 // console.log(JSON.parse(text));
-	 var a = document.createElement("a");
-	 var file = new Blob([text], {type: type});
-	 a.href = URL.createObjectURL(file);
-	 a.download = name;
-	 a.click();
-}
-
 
 ReactDOM.render(
 	// A size of your smartwatch screen size is controlled

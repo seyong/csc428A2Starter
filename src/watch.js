@@ -84,6 +84,7 @@ class Watch extends React.Component {
 		if(this.props.type === 'normal'){
 			return(
 				<div className="watch">
+					 <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardNormal originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
 					<button onClick={this.saveData}>SAVE</button>
@@ -92,6 +93,7 @@ class Watch extends React.Component {
 		}else if(this.props.type === 'zoom'){
 			return(
 				<div className="watch">
+				  <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardZoom originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
 					<button onClick={this.saveData}>SAVE</button>
@@ -120,6 +122,15 @@ class Watch extends React.Component {
 			// exception
 		}*/
 	}
+}
+
+function download(text, name, type) {
+	 // console.log(JSON.parse(text));
+	 var a = document.createElement("a");
+	 var file = new Blob([text], {type: type});
+	 a.href = URL.createObjectURL(file);
+	 a.download = name;
+	 a.click();
 }
 
 export default Watch
