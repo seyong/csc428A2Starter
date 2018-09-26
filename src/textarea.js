@@ -32,6 +32,6 @@ class TextArea extends React.Component{
             </div>
         )
     }
-} 
+}
 
 export default TextArea;

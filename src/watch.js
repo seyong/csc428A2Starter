@@ -6,13 +6,13 @@ import KeyboardZoom from './keyboard.wip'
 
 // FileName: watch.js file
 // Description:
-// 
+//
 
 //	@function: deviceIndependenceSize
 //	@params:
 //		ppi : device independent pixel per inch values.
 //		watchSize: Target AppleWatch size. Only two sizes are supported, 38mm and 42mm
-//	If you pass 'ppi' and 'watchSize' properties to Watch component, 
+//	If you pass 'ppi' and 'watchSize' properties to Watch component,
 //	This function will help you calculate Watch display width and height in pixels.
 const deviceIndependenceSize = (ppi,watchSize) => {
 	var width,height,deviceWidthInPixel,deviceHeightInPixel;
@@ -50,17 +50,33 @@ class Watch extends React.Component {
 
 		// React Component States.
 		// inputChar: a variable containing your input character from Keyboard.
-		// if 'inputChar' value has changed by onKeyCharReceived function, 
+		// if 'inputChar' value has changed by onKeyCharReceived function,
 		// Watch Component will re-render the interface
 		this.state = {
-			inputChar: ""
+			inputPhrase: ""
 		};
+
+		//add the target phrases here or load them from external files
+		this.targetPhrase =  "target phrase one";
 	}
 
 	onKeyCharReceived = (c) => {
 		//console.log("[Watch onHandleChange "+c);
 		this.setState({inputChar : c});
+		this.state.inputPhrase += c;
 	};
+
+
+	// //log data to files
+	// //this sample code only logs the target phrase and the user's input phrases
+	// //TODO: you need to log other measurements, such as the time when a user inputs each char, user id, etc.
+	saveData = () => {
+		let log_file = JSON.stringify({
+			targetPhrase: this.targetPhrase,
+			inputPhrase: this.state.inputPhrase
+		})
+		download(log_file, "results.txt", "text/plain");
+	}
 
 
 	render(){
@@ -68,15 +84,19 @@ class Watch extends React.Component {
 		if(this.props.type === 'normal'){
 			return(
 				<div className="watch">
+					 <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardNormal originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
+					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);
 		}else if(this.props.type === 'zoom'){
 			return(
 				<div className="watch">
+				  <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardZoom originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
+					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);
 		}else{
@@ -102,6 +122,15 @@ class Watch extends React.Component {
 			// exception
 		}*/
 	}
+}
+
+function download(text, name, type) {
+	 // console.log(JSON.parse(text));
+	 var a = document.createElement("a");
+	 var file = new Blob([text], {type: type});
+	 a.href = URL.createObjectURL(file);
+	 a.download = name;
+	 a.click();
 }
 
 export default Watch
