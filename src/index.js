@@ -50,22 +50,48 @@ const deviceIndependenceSize = (ppi,watchSize) => {
 	}
 }
 
+
 // Watch component renders a smartwatch interface
 class Watch extends React.Component {
-
 	constructor(props){
 		super(props);
 		this.dpr = window.devicePixelRatio;
 		this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
 		this.state = {
-			inputInput: ""
+			inputPhrase: ""
 		};
+		//add the target phrases here or load them from external files
+		this.targetPhrase =  "target phrase one";
 	}
 
 	handleChange = (c) => {
 		console.log("[Watch onHandleChange "+c);
 		this.setState({inputChar : c});
+		this.state.inputPhrase += c;
 	};
+
+	// //log data to files
+	// //this sample code only logs the target phrase and the user's input phrases
+	// //TODO: you need to log other measurements, such as the time when a user inputs each char, user id, etc.
+	saveData = () => {
+		let log_file = JSON.stringify({
+			targetPhrase: this.targetPhrase,
+			inputPhrase: this.state.inputPhrase
+		})
+		download(log_file, "results.txt", "text/plain");
+  }
+
+	//
+	// //log data to files
+	// //this sample code only logs the target phrase and the user's input phrases
+	// //TODO: you need to log other measurements, such as the time when a user inputs each char, user id, etc.
+	// saveData() {
+	// 	let log_file = JSON.stringify({
+	// 		targetPhrase: this.targetPhrase,
+	// 		inputPhrase: this.state.inputPhrase
+	// 	})
+	// 	download(log_file, "results.txt", "text/plain");
+	// }
 
 	render(){
 		const styles = {
@@ -74,17 +100,35 @@ class Watch extends React.Component {
 		}
 		return(
 			<div className="watch" style={styles} >
+				<label>{this.targetPhrase}</label>
 				<TextArea inputChar={this.state.inputChar}/>
 				<Keyboard2 original_scale={this.props.original_scale} displaySize = {this.screenSize} callback={this.handleChange}/>
+				<button onClick={this.saveData}>SAVE</button>
 			</div>
 		);
-
 	}
 }
+
+function download(text, name, type) {
+	 // console.log(JSON.parse(text));
+	 var a = document.createElement("a");
+	 var file = new Blob([text], {type: type});
+	 a.href = URL.createObjectURL(file);
+	 a.download = name;
+	 a.click();
+}
+
+
+// function KeyPress(e) {
+//       var evtobj = window.event? window.event : e
+//       if (evtobj.keyCode == 83 && evtobj.ctrlKey) 	saveData();
+// }
+//
+// document.onkeydown = KeyPress;
 
 //============
 ReactDOM.render(
 	//AppleWatch 42mm, display size 312px * 390px
-	<Watch size = {42} original_scale={0.15} devicePPI={112}/>,
+	<Watch id="myWatch" size = {42} original_scale={0.15} devicePPI={112}/>,
 	document.getElementById("root")
 );

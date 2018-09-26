@@ -21,13 +21,12 @@ class TextArea extends React.Component{
     }
 
     render(){
-        
         return(
             <div className="typed" style = {this.props.style}>
                 {this.state.text}
             </div>
         )
     }
-} 
+}
 
 export default TextArea;
