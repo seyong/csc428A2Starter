@@ -140,7 +140,7 @@ Second, after you have installed npm successfully, in the project directory, you
 ### `npm start`
 
 This command will start the application in a browser tab and display the app in the tab
-![Preview of the app in a browser](https://1drv.ms/u/s!AktFPdZXoK8RkdJeA1M3VS5b_w8a6g).
+![Preview of the app in a browser](https://github.com/seyong/csc428A2Starter/blob/master/app_start_img.PNG).
 
 We have tested the code with the Chrome and Safari on different touch-screen platforms (e.g., laptops, android phones, iOS devices).
 
