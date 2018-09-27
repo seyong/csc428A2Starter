@@ -1,26 +1,26 @@
 /***************************************************
-* CSC428/2514 - St. George, Fall 2018 
-* 
+* CSC428/2514 - St. George, Fall 2018
+*
 * File: index.js
 * Summary: Entry point of current React app.
-*	This assignment will help you become familiar with 
+*	This assignment will help you become familiar with
 *	a HCI experiment in interaction techniques design.
 *	This experiment is targeting Text Entry system,
 *	a well-known HCI problem.
 *	You are going to develop your own experimenet software
-*	and measure the performance of your participants, and 
+*	and measure the performance of your participants, and
 *	compare the designed text entry system with a baseline system.
 *	Please take time to read through the code and note
-*	how following text entry systems are working. 
+*	how following text entry systems are working.
 *
 * Instruction:
-*	The assignment handout and README files contain 
+*	The assignment handout and README files contain
 *	a detailed description of what you need to do. Please
 *	be sure to read them carefully.
-*	
+*
 * TODO:
-*	You must implement your own experiment software using 
-*	given Starter code. 
+*	You must implement your own experiment software using
+*	given Starter code.
 *
 * The code is commented, and the comments provide information
 * about what each js file is doing.
@@ -52,11 +52,11 @@ ReactDOM.render(
 	//Else,
 	// 	pass originalScale property to Watch Component as a size
 	// 	the default value is 0.15
-	// 
-	// type property will determine which version of text entry system 
-	// you are going to use. 
+	//
+	// type property will determine which version of text entry system
+	// you are going to use.
 	//	'normal'	: baseline condition, normal keyboard
-	//	'zoom' 		: A keyboard has a zoom function.  
+	//	'zoom' 		: A keyboard has a zoom function.
 	<Watch originalScale={0.15} type={'zoom'} />,
 	//<Watch originalScale={0.15} type={'normal'} />,
 	document.getElementById("root")
