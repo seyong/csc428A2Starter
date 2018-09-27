@@ -40,23 +40,23 @@ import Watch from './watch'
 
 
 ReactDOM.render(
-	// A size of a smartwatch screen is controlled
-	//	via 'original_scale' parameters
-
-	//If you want to do an experiment with exact same
-	//	screen size with Apple Watch Series 3,
-	//	pass 'size' and your 'devicePPI' as Watch component's properties.
-	//	For example, to simulate the Apple Watch Series 3 , 42mm
-	//	on your MacBookPro Retina:
-	//		<Watch size={42} devicePPI={112} type={YourType}/>
-	//Else,
-	// 	pass originalScale property to Watch Component as a size
-	// 	the default value is 0.15
-	//
 	// type property will determine which version of text entry system
 	// you are going to use.
 	//	'normal'	: baseline condition, normal keyboard
 	//	'zoom' 		: A keyboard has a zoom function.
+
+	//If you want to simulate Apple Watch Series 3,
+	//	use the following example code by passing 'size'
+	// and your 'devicePPI' as Watch component's properties.
+	//	For example, to simulate the Apple Watch Series 3 , 42mm
+	//	on your MacBookPro Retina:
+	//		<Watch size={42} devicePPI={112} type={YourType}/>
+	//else if you want to simulate a different sized watch,
+	// 	pass originalScale property to Watch Component as a size
+	// 	the default value is 0.15
+	// if this default size looks too small on your test device,
+	// change it accordingly.
+
 	<Watch originalScale={0.15} type={'zoom'} />,
 	//<Watch originalScale={0.15} type={'normal'} />,
 	document.getElementById("root")

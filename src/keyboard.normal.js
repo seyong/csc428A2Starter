@@ -1,18 +1,18 @@
 /***************************************************
-* CSC428/2514 - St. George, Fall 2018 
-* 
+* CSC428/2514 - St. George, Fall 2018
+*
 * File: keyboard.normal.js
 * Summary: This component will display the Baseline keyboard.
 *	The baseline keyboard is just shrink its size to your watch size.
-*	This component renders width:1024 x height:548 keyboard image 
+*	This component renders width:1024 x height:548 keyboard image
 *	 on <img> tag with converted size.
 *	'originalScale' you tossed from Watch component will be used here
-*	to convert 1024x548 size into a smaller size.  
+*	to convert 1024x548 size into a smaller size.
 *	Keyboard component will render following tags:
 *		<div> container: A container, eventhandlers will be registered here.
 *			<img> KB: An image displayed your keyboard layout.
 *			<div> overlay: an input key will be displayed shortly here.
-* 
+*
 * The code is commented, and the comments provide information
 * about what each js file is doing.
 *
@@ -52,7 +52,7 @@ class KeyboardNormal extends React.Component {
 		 * - imgStyle: CSS style for the keyboard image.
 		 * - overlayStyle: CSS style for the overlay <div>
 		 * - keyboardImg: A keyboard image to be displayed.
-		 * - overlayText: a text for overlay <div> 
+		 * - overlayText: a text for overlay <div>
 		 * - originalDimensions: containing a dimension of chosen keyboard image.
 		 */
 		this.state ={
@@ -72,7 +72,7 @@ class KeyboardNormal extends React.Component {
 			originalDimensions : {width:0, height:0}
 		};
 
-		// Following variables are necessary for rendering, but since they are not
+		// Following variables are necessary for rendering, but since they do not
 		// 	directly affect the rendering process, we are not going to set them as React States
 		//	React State affects UI rendering directly, which means , everytime your react state has changed
 		// 	by caling setState({}), render() function will be called.
@@ -119,7 +119,7 @@ class KeyboardNormal extends React.Component {
 
 	/**
 	 * Touch Event handlers
-	 * @param {*} e : to access javascript touchevent, 
+	 * @param {*} e : to access javascript touchevent,
 	 * 					you should access as 'e.nativeEvent'
 	 */
 	onTouchStart(e) {
@@ -132,7 +132,7 @@ class KeyboardNormal extends React.Component {
 	}
 
 	/**
-	 * Touch Event Handler 
+	 * Touch Event Handler
 	 * @param {*} e : touch event object.
 	 */
 	_onTouchMove(e) {
@@ -189,17 +189,22 @@ class KeyboardNormal extends React.Component {
 			var key = "delete";
 			this.props.onKeyCharReceived(key);
 		}else if(direction === "up"){ // Change keyboard layout from one to another.
-			// You have two keyboard layout. Alphabet and Symbols.
+			// You have two keyboard layouts: Alphabet and Symbols.
 			var imgPath = (this.state.keyboardImg === this.imgs[0])? this.imgs[1] : this.imgs[0];
 			this.setState({
-				keyboardImg:imgPath 
+				keyboardImg:imgPath
 			})
+		} else if(direction === "right"){
+			//do something here if you wish to use the swipt to the right gesture
+		}
+		else if(direction === "down"){
+			//do something here if you wish to use the swipt to the right gesture
 		}
 	}
 
 	/**
 	 * Image Load Event Handler
-	 * 	This callback is called when image has loaded. 
+	 * 	This callback is called when image has loaded.
 	 * @param {*} param: an object containing information of loaded image.
 	 */
 	onLoad({target:img}){
@@ -207,11 +212,11 @@ class KeyboardNormal extends React.Component {
 
 		/*
 		this.originalDimensions = {
-			width:img.naturalWidth, 
+			width:img.naturalWidth,
 			height:img.naturalHeight
 		};*/
 
-		// Changing React state is asynchronous, 
+		// Changing React state is asynchronous,
 		// 	to sync the change of the state and function call, pass the function as a parameter.
 		this.setState({
 			originalDimensions:{
@@ -254,7 +259,7 @@ class KeyboardNormal extends React.Component {
 			}else if(ev.keyCode === 13){
 				key = "Enter";
 			}
-			// process Callback function from parent Component, 
+			// process Callback function from parent Component,
 			// this will change inputChar and inputPhrase in Watch component.
 			this.props.onKeyCharReceived(key);
 
@@ -268,7 +273,7 @@ class KeyboardNormal extends React.Component {
 
 	/**
 	 * PointerUp Event Handler, use Only for Debugging on laptop
-	 * @param {*} e 
+	 * @param {*} e
 	 *  We are using offsetX and offsetY. The origin of offsetX and offsetY is left,top of 'container' <div>
 	 */
 	onPointerUp(e){
@@ -289,9 +294,9 @@ class KeyboardNormal extends React.Component {
 	}
 
 	/**
-	 * MouseDown Event Handler, 
+	 * MouseDown Event Handler,
 	 *  same as PointerUp. This is implemented to test with your mouse on devtools of your browser.
-	 * @param {*} e 
+	 * @param {*} e
 	 */
 	onMouseDown(e) {
 		// use e.nativeEvent.offsetX,Y for accuracy
@@ -310,7 +315,7 @@ class KeyboardNormal extends React.Component {
 	 */
 	componentDidUpdate = () => {
 		// For touch event, we cannot use offsetX and offsetY
-		// 	to calculate the touched point on the keyboard image, 
+		// 	to calculate the touched point on the keyboard image,
 		//  we stored the 'container' <div>'s left and top values on screen.
 		this.offsetTop = ReactDOM.findDOMNode(this).offsetTop;
 		this.offsetLeft = ReactDOM.findDOMNode(this).offsetLeft;
@@ -354,7 +359,7 @@ class KeyboardNormal extends React.Component {
 					<img id="keyboardtype" className="KB" alt="kb"
 						src={this.state.keyboardImg} onLoad={this.onLoad}
 						style={imgStyle}/>
-					<div className="overlay" 
+					<div className="overlay"
 						style={overlayStyle}
 						dangerouslySetInnerHTML={{
 							__html: this.state.overlayText
@@ -372,7 +377,7 @@ class KeyboardNormal extends React.Component {
 					<img id="keyboardtype" className="KB" alt="kb"
 						src={this.state.keyboardImg} onLoad={this.onLoad}
 						style={imgStyle}/>
-					<div className="overlay" 
+					<div className="overlay"
 						style={overlayStyle}
 						dangerouslySetInnerHTML={{
 							__html: this.state.overlayText
@@ -383,17 +388,17 @@ class KeyboardNormal extends React.Component {
 	}
 
 	/**
-	 * Reset function. 
+	 * Reset function.
 	 * This function will reset a viewport to initial setup.
 	 * @param animated: a flag for transition animation.
 	 */
 	reset = (animated) => {
 		console.log("call reset...");
 		this.setViewPort({
-			x:0 , y:0, 
-			//width: this.originalDimensions.width, 
+			x:0 , y:0,
+			//width: this.originalDimensions.width,
 			//height:this.originalDimensions.height
-			width: this.state.originalDimensions.width, 
+			width: this.state.originalDimensions.width,
 			height:this.state.originalDimensions.height
 			},animated === true);
 		this.clearResetTimeout();
@@ -417,7 +422,7 @@ class KeyboardNormal extends React.Component {
 		// get width and height with scale values computed above.
 		var width = scaleX * this.state.originalDimensions.width;
 		var height = scaleY * this.state.originalDimensions.height;
-		// this x,y values will shift your image 
+		// this x,y values will shift your image
 		var x = -1 * viewport.x * scaleX;
 		var y = -1 * viewport.y * scaleY;
 
@@ -448,8 +453,8 @@ class KeyboardNormal extends React.Component {
 
 	/**
 	 * Get WindowDimension
-	 * 	compute the windowdimension with your originalScale value. 
-	 * 	This will return initial keyboard image size and your watch size. 
+	 * 	compute the windowdimension with your originalScale value.
+	 * 	This will return initial keyboard image size and your watch size.
 	 */
 	getWindowDimension = () => {
 		console.log("Scale: "+this.config.originalScale)
@@ -469,7 +474,7 @@ class KeyboardNormal extends React.Component {
 		console.log("Get KeyChar");
 		var minDistance = false, minDistanceKey = null;
 		var maxKeyErrorDistSquared = Math.pow(this.config.maxKeyErrorDistance,2);
-		
+
 		//Select which keyboard layout is currently displayed.
 		var keys = (this.state.keyboardImg === this.imgs[0])? Keymaps.keys : Keymaps.keys_sym;
 
@@ -500,7 +505,7 @@ class KeyboardNormal extends React.Component {
 
 	/**
 	 * Reposition the keyboard image in <img> tag,
-	 * @param position: x,y values should be negative values. 
+	 * @param position: x,y values should be negative values.
 	 * 				width and height are newly computed the size of keyboard image
 	 */
 	setPosition = (position,animated) => {

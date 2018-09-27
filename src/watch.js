@@ -1,9 +1,9 @@
 /***************************************************
-* CSC428/2514 - St. George, Fall 2018 
-* 
+* CSC428/2514 - St. George, Fall 2018
+*
 * File: watch.js
 * Summary: Watch Component
-* 
+*
 * The code is commented, and the comments provide information
 * about what each js file is doing.
 *
@@ -29,7 +29,7 @@ import KeyboardZoom from './keyboard.wip'
  * Calculate watch size (width and height) in pixels.
  * 	if you decide to use exact AppleWatch size, use this function to get width and height.
  * @param: ppi , your device independent pixel per inch. Can be acheived from the web.
- * @param: watchSize, default apple watch size, 38mm or 42mm. 
+ * @param: watchSize, default apple watch size, 38mm or 42mm.
  * 			other size value will be return zero in size.
  */
 const deviceIndependenceSize = (ppi,watchSize) => {
@@ -56,8 +56,11 @@ const deviceIndependenceSize = (ppi,watchSize) => {
 }
 
 /**
- * Download typed text and target phrase
- * @param {*} text: 
+ * Download user typed content and target phrases
+ * you can and should add more measurements
+ * that you recorded in your study into the text parameter
+ * so that you can save them into a file
+ * @param {*} text:
  * @param {*} name:
  * @param {*} type:
  */
@@ -71,7 +74,7 @@ function download(text, name, type) {
 }
 
 /**
- * Watch Class 
+ * Watch Class
  * This class extends React.Component
  */
 class Watch extends React.Component {
@@ -87,7 +90,7 @@ class Watch extends React.Component {
 	 */
 	constructor(props){
 		super(props);
-		
+
 		if(props.size !== undefined && props.devicePPI !== undefined){
 			// you are going to use pre-defined Watch size.
 			this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
@@ -97,7 +100,7 @@ class Watch extends React.Component {
 
 		// React Component States.
 		// inputPhrase: a variable containing all characters typed by users.
-		// inputChar: a variable containing your input character from the Keyboard.
+		// inputChar: a variable containing your current input character from the Keyboard.
 		// if 'inputPhrase' or 'inputChar' value has changed by onKeyCharReceived(),
 		// Watch Component will re-render the interface if the state has changed by calling
 		// 	setState({});
@@ -113,7 +116,7 @@ class Watch extends React.Component {
 	/**
 	 * Callback for input character changes.
 	 * @param {} c: changed character
-	 * 
+	 *
 	 * This callback will be passed to child (Keyboard components, in our case).
 	 * when the input character received, it changes inputPhrase state.
 	 */
@@ -123,9 +126,9 @@ class Watch extends React.Component {
 	};
 
 
-	// //log data to files
-	// //this sample code only logs the target phrase and the user's input phrases
-	// //TODO: you need to log other measurements, such as the time when a user inputs each char, user id, etc.
+	//log data to files
+	//this sample code only logs the target phrase and the user's input phrases
+	//TODO: you need to log other measurements, such as the time when a user inputs each char, user id, etc.
 	saveData = () => {
 		let log_file = JSON.stringify({
 			targetPhrase: this.targetPhrase,
@@ -139,7 +142,7 @@ class Watch extends React.Component {
 	 * Render function()
 	 * This function will return UI of the system.
 	 *	It will return different text-entry system, depending on which
-	 *	type property you did pass from index.js 
+	 *	type property you did pass from index.js
 	 */
 	render(){
 		// style={{}} is an inline styling with calculated screen size
@@ -165,7 +168,7 @@ class Watch extends React.Component {
 			// exception
 		}
 
-		// if you decide to use AppleWatch size, then comment above code and 
+		// if you decide to use AppleWatch size, then comment above code and
 		//	uncomment following blocks.
 		/*
 		if(this.props.type === 'normal'){

@@ -1,13 +1,13 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+This project is a starter code for assignment 2 of the CSC428/CSC2514, Fall 2018, at the University of Toronto.
 
-Below you will find some information on how to perform common tasks.<br>
-You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+We have provided comments in the code for you to better understand it. Here we provide instructions about how to run the code in addition to the general guidelines about the react app, on which this starter code is built.
+
+Read the first two sections in the table of contents to understand how to run the code on laptops/desktops/mobiles. The rest sections provide general guidelines about the react app. 
 
 ## Table of Contents
-
-- [Updating to New Releases](#updating-to-new-releases)
-- [Sending Feedback](#sending-feedback)
 - [Folder Structure](#folder-structure)
+- [How to run this project] (#run-project)
+- [Sending Feedback](#sending-feedback)
 - [Available Scripts](#available-scripts)
   - [npm start](#npm-start)
   - [npm test](#npm-test)
@@ -103,38 +103,26 @@ You can find the most recent version of this guide [here](https://github.com/fac
 - [Alternatives to Ejecting](#alternatives-to-ejecting)
 - [Something Missing?](#something-missing)
 
-## Updating to New Releases
-
-Create React App is divided into two packages:
-
-* `create-react-app` is a global command-line utility that you use to create new projects.
-* `react-scripts` is a development dependency in the generated projects (including this one).
-
-You almost never need to update `create-react-app` itself: it delegates all the setup to `react-scripts`.
-
-When you run `create-react-app`, it always creates the project with the latest version of `react-scripts` so you’ll get all the new features and improvements in newly created apps automatically.
-
-To update an existing project to a new version of `react-scripts`, [open the changelog](https://github.com/facebookincubator/create-react-app/blob/master/CHANGELOG.md), find the version you’re currently on (check `package.json` in this folder if you’re not sure), and apply the migration instructions for the newer versions.
-
-In most cases bumping the `react-scripts` version in `package.json` and running `npm install` in this folder should be enough, but it’s good to consult the [changelog](https://github.com/facebookincubator/create-react-app/blob/master/CHANGELOG.md) for potential breaking changes.
-
-We commit to keeping the breaking changes minimal so you can upgrade `react-scripts` painlessly.
 
 ## Sending Feedback
 
-We are always open to [your feedback](https://github.com/facebookincubator/create-react-app/issues).
+Read, play around with the code carefully to understand it first.
+If you have further questions, you can contact TAs at:
+Seyong Ha: seyongha@dgp.toronto.edu
+Mingming Fan: mfan@dgp.toronto.edu
+
 
 ## Folder Structure
-
-After creation, your project should look like this:
+The project structure is as follows:
 
 ```
-my-app/
+csc428A2Starter/
   README.md
   node_modules/
   package.json
   public/
     index.html
+    images/
     favicon.ico
   src/
     App.css
@@ -142,24 +130,47 @@ my-app/
     App.test.js
     index.css
     index.js
+    keyboard.normal.js
+    keyboard.wip.js
+    keys.js
+    textarea.js
+    watch.js
     logo.svg
+    asset/
 ```
 
-For the project to build, **these files must exist with exact filenames**:
+## run-project
 
-* `public/index.html` is the page template;
-* `src/index.js` is the JavaScript entry point.
+First, make sure you have npm installed on your test machine (e.g., a laptop or a desktop).
+If you haven't installed it on your test machine, follow instructions here: https://www.npmjs.com/get-npm
 
-You can delete or rename the other files.
+Second, after you have installed npm successfully, in the project directory, you can run:
+### 'npm start'
 
-You may create subdirectories inside `src`. For faster rebuilds, only files inside `src` are processed by Webpack.<br>
-You need to **put any JS and CSS files inside `src`**, otherwise Webpack won’t see them.
+This command will start the application in a browser tab and display the app in the tab (https://drive.google.com/file/d/1xLpvxsvOx_Zm-M8ZEpAAqcXHsyELV3d0/view?usp=sharing).
 
-Only files inside `public` can be used from `public/index.html`.<br>
-Read instructions below for using assets from JavaScript and HTML.
+We have tested the code with the Chrome and Safari on different touch-screen platforms (e.g., laptops, android phones, iOS devices).
 
-You can, however, create more top-level directories.<br>
-They will not be included in the production build so you can use them for things like documentation.
+Third, in this experiment, you will examine the text entry performance between two types of keypbards on "smartwatch."
+The smartwatch can be simulated on any touch-screen enabled devices (e.g., laptops, android phones, iOS devices).
+If you wish to use your touch-screen laptop to simulate the smartwatch,
+you need to think about how to position your laptop so that it simulates a smartwatch use scenario as closely as possible.
+
+If you decide to use a smartphone to carry out the experiment, then you need to think about use something (e.g., a cloth strip) to hold the phone to the user's wrist. You must then follow the instructions below:
+
+1) Check the IP address of your laptop (or desktop)   
+2) Ensure that your smartphone and your laptop (or desktop) are in the same network (e.g., same WiFi)
+3) Install and update your Chrome browser to the latest version
+4) Open the browser and type the following in the browser: IP:3000
+
+You should now see the same keyboard interface as you see in Step 2 on your laptop (desktop).
+
+You can write code to render a Watch Image around the keyboard to make it more realistic.
+
+Lastly, we have written comments in the code to help understand it.
+
+The rest of the README.md will provide you more information about react app, on which this starter code is built on.
+
 
 ## Available Scripts
 
@@ -300,7 +311,7 @@ In the WebStorm menu `Run` select `Edit Configurations...`. Then click `+` and s
 
 Start your app by running `npm start`, then press `^D` on macOS or `F9` on Windows and Linux or click the green debug icon to start debugging in WebStorm.
 
-The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine. 
+The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine.
 
 ## Formatting Code Automatically
 
@@ -2031,7 +2042,7 @@ If you’re using [Apache HTTP Server](https://httpd.apache.org/), you need to c
     RewriteRule ^ index.html [QSA,L]
 ```
 
-It will get copied to the `build` folder when you run `npm run build`. 
+It will get copied to the `build` folder when you run `npm run build`.
 
 If you’re using [Apache Tomcat](http://tomcat.apache.org/), you need to follow [this Stack Overflow answer](https://stackoverflow.com/a/41249464/4878474).
 
@@ -2471,7 +2482,7 @@ To resolve this:
 1. Open an issue on the dependency's issue tracker and ask that the package be published pre-compiled.
   * Note: Create React App can consume both CommonJS and ES modules. For Node.js compatibility, it is recommended that the main entry point is CommonJS. However, they can optionally provide an ES module entry point with the `module` field in `package.json`. Note that **even if a library provides an ES Modules version, it should still precompile other ES6 features to ES5 if it intends to support older browsers**.
 
-2. Fork the package and publish a corrected version yourself. 
+2. Fork the package and publish a corrected version yourself.
 
 3. If the dependency is small enough, copy it to your `src/` folder and treat it as application code.
 
