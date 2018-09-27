@@ -41,8 +41,9 @@ class KeyboardZoom extends KeyboardNormal {
 	constructor(props){
 		super(props);
 		// add more keyboard configuration.
+		console.log(this.props.originalScale);
 		this.config.zoomFactor = 2.2;
-		this.config.originalScale = 0.12;
+		this.config.originalScale = this.props.originalScale;
 		this.config.maxZoom = 1.0;
 		this.config.resetOnMaxZoom =  true,
 		this.config.centerBias = 0.05
