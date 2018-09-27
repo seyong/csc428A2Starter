@@ -6,7 +6,7 @@ Read the first two sections in the table of contents to understand how to run th
 
 ## Table of Contents
 - [Folder Structure](#folder-structure)
-- [How to run this project] (#run-project)
+- [How to run the project](#run-project)
 - [Sending Feedback](#sending-feedback)
 - [Available Scripts](#available-scripts)
   - [npm start](#npm-start)
