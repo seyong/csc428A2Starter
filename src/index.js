@@ -57,7 +57,7 @@ ReactDOM.render(
 	// you are going to use. 
 	//	'normal'	: baseline condition, normal keyboard
 	//	'zoom' 		: A keyboard has a zoom function.  
-	<Watch originalScale={0.15} type={'zoom'} />,
-	//<Watch originalScale={0.15} type={'normal'} />,
+	//<Watch originalScale={0.35} type={'zoom'} />,
+	<Watch originalScale={0.25} type={'normal'} />,
 	document.getElementById("root")
 );
