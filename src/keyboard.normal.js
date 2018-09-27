@@ -1,18 +1,61 @@
+/***************************************************
+* CSC428/2514 - St. George, Fall 2018 
+* 
+* File: keyboard.normal.js
+* Summary: This component will display the Baseline keyboard.
+*	The baseline keyboard is just shrink its size to your watch size.
+*	This component renders width:1024 x height:548 keyboard image 
+*	 on <img> tag with converted size.
+*	'originalScale' you tossed from Watch component will be used here
+*	to convert 1024x548 size into a smaller size.  
+*	Keyboard component will render following tags:
+*		<div> container: A container, eventhandlers will be registered here.
+*			<img> KB: An image displayed your keyboard layout.
+*			<div> overlay: an input key will be displayed shortly here.
+* 
+* The code is commented, and the comments provide information
+* about what each js file is doing.
+*
+* Written by: Seyong Ha, Mingming Fan, Sep. 2018
+*				Assignment2: Quantitative Analysis
+*				Updated at: NA
+****************************************************/
+
+/**
+ * Libraries
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Keymaps from './keys.js';
 
-// Normal Keyboard
-// Keyboard component renders a keyboard layout
+/**
+ * KeyboardNormal class extending React Component
+ */
 class KeyboardNormal extends React.Component {
 
-	// Constructor
+	/**
+	 * Constructor
+	 * @param {} props: a paramater which enables you to access
+	 * 			values passed from parent Componenet(or Node).
+	 * 			e.g., if you pass 'value' as 5 in Watch component
+	 * 				<Watch value={5}/>
+	 * 				you can access by calling 'this.props.value'
+	 * 				props are immutable.
+	 */
 	constructor(props){
 		super(props);
 
-		//set React State variables
+		/**
+		 * This components more state values.
+		 * - originalScale: a scale value to resize a keyboard image.
+		 * - swiped: A flag for swipe event.
+		 * - imgStyle: CSS style for the keyboard image.
+		 * - overlayStyle: CSS style for the overlay <div>
+		 * - keyboardImg: A keyboard image to be displayed.
+		 * - overlayText: a text for overlay <div> 
+		 * - originalDimensions: containing a dimension of chosen keyboard image.
+		 */
 		this.state ={
-			font_size: 0,
         	originalScale: this.props.originalScale,
 			swiped: false,
 			imgStyle : {
@@ -60,9 +103,6 @@ class KeyboardNormal extends React.Component {
 		// Check if PointerEvent is supported.
 		// PointerEvent is recommended for Chrome (> v55), Edge.
 		// Mouse&TouchEvent are recommended for other browsers.
-		console.log("Is PointerEvent supported? "+window.PointerEvent);
-		console.log(this.startX);
-		//this.props.onKeyCharReceived(window.PointerEvent);
 		if(window.PointerEvent){
 			this.onPointerUp = this.onPointerUp.bind(this);
 			this.onTouchStart = this.onTouchStart.bind(this);
@@ -77,9 +117,11 @@ class KeyboardNormal extends React.Component {
 	}
 
 
-	//====
-	// Touch EventHandler
-	//====
+	/**
+	 * Touch Event handlers
+	 * @param {*} e : to access javascript touchevent, 
+	 * 					you should access as 'e.nativeEvent'
+	 */
 	onTouchStart(e) {
 		const touch = e.nativeEvent.touches[0];
 		this.startX = touch.clientX;
@@ -89,19 +131,29 @@ class KeyboardNormal extends React.Component {
 		e.stopPropagation();
 	}
 
+	/**
+	 * Touch Event Handler 
+	 * @param {*} e : touch event object.
+	 */
 	_onTouchMove(e) {
 		if (e.changedTouches && e.changedTouches.length) {
 			const touch = e.nativeEvent.changedTouches[0];
 			this._swipe.swiping = true;
 		}
 		e.stopPropagation();
-		
 	}
 
+	/**
+	 * TouchEvent Handler
+	 * @param {} e : touch event object.
+	 */
 	_onTouchEnd(e) {
+		console.log("onTouchEnd");
 		const touch = e.nativeEvent.changedTouches[0];
 		var dx = touch.clientX - this.startX;
 		var dy = touch.clientY - this.startY;
+
+		//Swipe Event detection.
 		if (this._swipe.swiping){
 			if(Math.abs(dx) > this.config.minSwipeX){
 				if(dx > 0){
@@ -120,35 +172,46 @@ class KeyboardNormal extends React.Component {
 			this.props.onSwiped && this.props.onSwiped();
 			this.setState({swiped:true});
 		}else{
+			//if not swipe event, process as 'keyclick' event
 			this.onKeyClick(e);
 		}
 		this._swipe = {};
 		e.stopPropagation();
 	}
 
+	/**
+	 * SwipeEvent Handler, manually called from the code.
+	 * 	Currently, we are using only 'left' and 'up' directions.
+	 * @param: direction, swiping direction.
+	 */
 	onSwipe = (direction) => {
-		if(direction === "left"){
+		if(direction === "left"){ // Delete character.
 			var key = "delete";
 			this.props.onKeyCharReceived(key);
-		}else if(direction === "up"){
-			//change keyboard image here
+		}else if(direction === "up"){ // Change keyboard layout from one to another.
+			// You have two keyboard layout. Alphabet and Symbols.
 			var imgPath = (this.state.keyboardImg === this.imgs[0])? this.imgs[1] : this.imgs[0];
 			this.setState({
 				keyboardImg:imgPath 
 			})
-
 		}
-		// "down", "right" haven't assigned
 	}
 
+	/**
+	 * Image Load Event Handler
+	 * 	This callback is called when image has loaded. 
+	 * @param {*} param: an object containing information of loaded image.
+	 */
 	onLoad({target:img}){
-		console.log("[onLoad] image naturalSize: "+img.naturalWidth+":"+img.naturalHeight);
+		//console.log("[onLoad] image naturalSize: "+img.naturalWidth+":"+img.naturalHeight);
+
+		/*
 		this.originalDimensions = {
 			width:img.naturalWidth, 
 			height:img.naturalHeight
-		};
+		};*/
 
-		// Change React state is asynchronous, 
+		// Changing React state is asynchronous, 
 		// 	to sync the change of the state and function call, pass the function as a parameter.
 		this.setState({
 			originalDimensions:{
@@ -167,16 +230,21 @@ class KeyboardNormal extends React.Component {
 		}
 	}
 
+	/**
+	 * KeyDown Event Handler,
+	 * 	For input test. You can use your physical keyboard on your labtop.
+	 * @param ev: keyboard event object.
+	 */
 	onKeyDown = (ev) => {
-		console.log("Key pressed: " + ev.key + "/" +ev.keyCode);
+		//console.log("Key pressed: " + ev.key + "/" +ev.keyCode);
 		if(ev.keyCode === 37){
-			console.log("[KeyPressed] Left arrow clicked");
+		//	console.log("[KeyPressed] Left arrow clicked");
 		}else if(ev.keyCode === 38){
-			console.log("[KeyPressed] Top arrow clicked");
+		//	console.log("[KeyPressed] Top arrow clicked");
 		}else if(ev.keyCode === 39){
-			console.log("[KeyPressed] Right arrow clicked");
+		//	console.log("[KeyPressed] Right arrow clicked");
 		}else if(ev.keyCode === 40){
-			console.log("[KeyPressed] Down arrow clicked");
+		//	console.log("[KeyPressed] Down arrow clicked");
 		}else{
 			var key = String.fromCharCode(ev.keyCode).toLocaleLowerCase();
 			if(ev.keyCode === 8){
@@ -186,9 +254,11 @@ class KeyboardNormal extends React.Component {
 			}else if(ev.keyCode === 13){
 				key = "Enter";
 			}
-			// trigger
+			// process Callback function from parent Component, 
+			// this will change inputChar and inputPhrase in Watch component.
 			this.props.onKeyCharReceived(key);
-			// flash
+
+			// Flashing a selected key on overlay <div>
 			this.flashKey(key);
 			ev.preventDefault();
 			ev.stopPropagation();
@@ -196,26 +266,37 @@ class KeyboardNormal extends React.Component {
 		}
 	}
 
+	/**
+	 * PointerUp Event Handler, use Only for Debugging on laptop
+	 * @param {*} e 
+	 *  We are using offsetX and offsetY. The origin of offsetX and offsetY is left,top of 'container' <div>
+	 */
 	onPointerUp(e){
 		// use e.nativeEvent.offsetX,Y for accuracy
+		if(e.nativeEvent.pointerType === "touch"){
+			//Do nothing
+			return false;
+		}
 		//var x = e.nativeEvent.offsetX / (this.position.width/this.originalDimensions.width);
 		//var y = e.nativeEvent.offsetY / (this.position.height/this.originalDimensions.height);
 		var x = e.nativeEvent.offsetX / (this.position.width/this.state.originalDimensions.width);
 		var y = e.nativeEvent.offsetY / (this.position.height/this.state.originalDimensions.height);
-		console.log("[onPointerDown] xy: "+ x + ":" + y);
-		console.log("[onPointerDown] position: "+ this.position.x + ":" + this.position.y);
+		console.log("[onPointerUp] xy: "+ x + ":" + y);
 		this.onKeyClick({x:x,y:y});
 		//e.preventDefault();
 		e.stopPropagation();
 		return false;
 	}
 
+	/**
+	 * MouseDown Event Handler, 
+	 *  same as PointerUp. This is implemented to test with your mouse on devtools of your browser.
+	 * @param {*} e 
+	 */
 	onMouseDown(e) {
 		// use e.nativeEvent.offsetX,Y for accuracy
 		//var x = e.nativeEvent.offsetX / (this.position.width/this.originalDimensions.width);
 		//var y = e.nativeEvent.offsetY / (this.position.height/this.originalDimensions.height);
-		console.log(window.PointerEvent);
-		console.log(window.MouseEvent);
 		var x = e.nativeEvent.offsetX / (this.position.width/this.state.originalDimensions.width);
 		var y = e.nativeEvent.offsetY / (this.position.height/this.state.originalDimensions.height);
 		console.log("[onMouseDown] xy: "+ x + ":" + y);
@@ -223,12 +304,21 @@ class KeyboardNormal extends React.Component {
 		this.onKeyClick({x:x,y:y});
 	}
 
-
+	/**
+	 * Callback in React Componenet lifecycle.
+	 * once all the component value has changed, this function is called.
+	 */
 	componentDidUpdate = () => {
+		// For touch event, we cannot use offsetX and offsetY
+		// 	to calculate the touched point on the keyboard image, 
+		//  we stored the 'container' <div>'s left and top values on screen.
 		this.offsetTop = ReactDOM.findDOMNode(this).offsetTop;
 		this.offsetLeft = ReactDOM.findDOMNode(this).offsetLeft;
 	}
 
+	/**
+	 * Render function
+	 */
 	render(){
 		const size = this.getWindowDimension();
 		const style = {
@@ -252,6 +342,7 @@ class KeyboardNormal extends React.Component {
 			left: this.state.left
 		}
 		console.log("[Rendering...] ");
+		// if your browser supports PointerEvent...
 		if(window.PointerEvent){
 			return(
 				<div className="container" style = {style} tabIndex="-1"
@@ -270,7 +361,7 @@ class KeyboardNormal extends React.Component {
 						}}></div>
 				</div>
 			)
-		}else{
+		}else{ //else
 			return(
 				<div className="container" style = {style} tabIndex="-1"
 						onKeyDown={this.onKeyDown}
@@ -289,9 +380,13 @@ class KeyboardNormal extends React.Component {
 				</div>
 			)
 		}
-		
 	}
 
+	/**
+	 * Reset function. 
+	 * This function will reset a viewport to initial setup.
+	 * @param animated: a flag for transition animation.
+	 */
 	reset = (animated) => {
 		console.log("call reset...");
 		this.setViewPort({
@@ -305,25 +400,28 @@ class KeyboardNormal extends React.Component {
 		this.inStartingPosition = true;
 	}
 
+	/**
+	 * setViewport function
+	 * @param viewport: a viewport to be set
+	 * 				viewport paramters has x, y, width, and height.
+	 * @param animated: a flag for transition animation.
+	 */
 	setViewPort = (viewport,animated) =>{
-		console.log("Entering setViewPort()");
+		// Get initial window dimension
 		var windowDim = this.getWindowDimension();
-		console.log("winDim: "+windowDim.width + ":"+windowDim.height);
-		console.log("viewport: "+viewport.width + ":"+viewport.height);
+		// Calculate the scale value of X, Y
 		var scaleX = windowDim.width/viewport.width;
 		var scaleY = windowDim.height/viewport.height;
-		console.log("scale: "+scaleX + ":"+scaleY);
 		//var width = scaleX * this.originalDimensions.width;
 		//var height = scaleY * this.originalDimensions.height;
+		// get width and height with scale values computed above.
 		var width = scaleX * this.state.originalDimensions.width;
 		var height = scaleY * this.state.originalDimensions.height;
+		// this x,y values will shift your image 
 		var x = -1 * viewport.x * scaleX;
 		var y = -1 * viewport.y * scaleY;
-		console.log("xy: "+viewport.x + ":"+viewport.y);
-		console.log("xy: "+scaleX + ":"+scaleY);
-		console.log("xy: "+x + ":"+y);
 
-		console.log(x+":"+y+":"+width+":"+height);
+		// reposition your keyboard image within 'container' <div>
 		this.setPosition({x:x,y:y,width:width,height:height},animated);
 		this.viewport = viewport;
 	}
@@ -335,6 +433,9 @@ class KeyboardNormal extends React.Component {
 		this.resetTimeout = undefined;
 	}
 
+	/**
+	 * KeyClick event on the keyboard image.
+	 */
 	onKeyClick = (pt) => {
 		var key = this.getKeyChar(pt);
 		if(key != null){
@@ -345,6 +446,11 @@ class KeyboardNormal extends React.Component {
 		return false;
 	}
 
+	/**
+	 * Get WindowDimension
+	 * 	compute the windowdimension with your originalScale value. 
+	 * 	This will return initial keyboard image size and your watch size. 
+	 */
 	getWindowDimension = () => {
 		console.log("Scale: "+this.config.originalScale)
 		return {
@@ -355,22 +461,27 @@ class KeyboardNormal extends React.Component {
 		};
 	}
 
+	/**
+	 * Compute KeyChar on the keyboard iamge.
+	 * @param pt: x,y value on the keyboard image.
+	 */
 	getKeyChar = (pt) => {
-		//console.log("Key Event");
-		//var keys = this.env.keymaps.keys;
-		//console.log("Key Event: " + keys.length);
-		//console.log("Poitn Event => "+ pt.x + "/" + pt.y);
+		console.log("Get KeyChar");
 		var minDistance = false, minDistanceKey = null;
 		var maxKeyErrorDistSquared = Math.pow(this.config.maxKeyErrorDistance,2);
+		
+		//Select which keyboard layout is currently displayed.
 		var keys = (this.state.keyboardImg === this.imgs[0])? Keymaps.keys : Keymaps.keys_sym;
-		//console.log(Keymaps.keys.keys);
+
+		//Iterate through keymaps.
 		for(var i=0, len = keys.length; i<len; i++){
 			var keychar = keys[i];
 			console.log("[keychar]: "+keychar);
 			if(keychar.x <= pt.x && keychar.y <= pt.y && keychar.x + keychar.width >= pt.x && keychar.y + keychar.height >= pt.y)
 			{
+				//if point is within particular key.
 				return keychar.key;
-			}else{ // approximate
+			}else{ // approximate the selected key.
 				var keyCharCenterX = keychar.x + keychar.width/2;
 				var keyCharCenterY = keychar.y + keychar.height/2;
 				var dx = pt.x - keyCharCenterX;
@@ -387,6 +498,11 @@ class KeyboardNormal extends React.Component {
 		return minDistanceKey;
 	}
 
+	/**
+	 * Reposition the keyboard image in <img> tag,
+	 * @param position: x,y values should be negative values. 
+	 * 				width and height are newly computed the size of keyboard image
+	 */
 	setPosition = (position,animated) => {
 		console.log("Entering setPosition() ..."+position.width);
 		if(animated === false){
