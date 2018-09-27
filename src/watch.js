@@ -161,6 +161,10 @@ class Watch extends React.Component {
 				  <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardZoom originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
+					//the save button below is only to demonstrate to you how to save data
+					// to files.
+					//TODO: You need to remove it in your experiment and figure out another way
+					// call this.saveData function to save user's data
 					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);
