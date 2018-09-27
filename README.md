@@ -135,6 +135,7 @@ csc428A2Starter/
 
 First, make sure you have npm installed on your test machine (e.g., a laptop or a desktop).
 If you haven't installed it on your test machine, follow instructions here: https://www.npmjs.com/get-npm
+and try 'npm install' to install all the necessary librareis. 
 
 Second, after you have installed npm successfully, in the project directory, you can run:
 ### `npm start`
