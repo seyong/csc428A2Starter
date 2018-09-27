@@ -1,8 +1,8 @@
-This project is a starter code for assignment 2 of the CSC428/CSC2514, Fall 2018, at the University of Toronto.
+This project is a starter code for the assignment 2 of the CSC428/CSC2514, Fall 2018, at the University of Toronto.
 
 We have provided comments in the code for you to better understand it. Here we provide instructions about how to run the code in addition to the general guidelines about the react app, on which this starter code is built.
 
-Read the first two sections in the table of contents to understand how to run the code on laptops/desktops/mobiles. The rest sections provide general guidelines about the react app. 
+Read the first two sections in the table of contents to understand how to run the code on laptops/desktops/mobiles. The rest sections provide general guidelines about the react app.
 
 ## Table of Contents
 - [Folder Structure](#folder-structure)
@@ -104,14 +104,6 @@ Read the first two sections in the table of contents to understand how to run th
 - [Something Missing?](#something-missing)
 
 
-## Sending Feedback
-
-Read, play around with the code carefully to understand it first.
-If you have further questions, you can contact TAs at:
-Seyong Ha: seyongha@dgp.toronto.edu
-Mingming Fan: mfan@dgp.toronto.edu
-
-
 ## Folder Structure
 The project structure is as follows:
 
@@ -139,7 +131,7 @@ csc428A2Starter/
     asset/
 ```
 
-## run-project
+## Run Project
 
 First, make sure you have npm installed on your test machine (e.g., a laptop or a desktop).
 If you haven't installed it on your test machine, follow instructions here: https://www.npmjs.com/get-npm
@@ -169,8 +161,16 @@ You can write code to render a Watch Image around the keyboard to make it more r
 
 Lastly, we have written comments in the code to help understand it.
 
-The rest of the README.md will provide you more information about react app, on which this starter code is built on.
+## Sending Feedback
 
+Read, play around with the code carefully to understand it first.
+If you have further questions, you can contact TAs at:
+Seyong Ha: seyongha@dgp.toronto.edu
+Mingming Fan: mfan@dgp.toronto.edu
+
+
+
+The rest of the README.md will provide you more information about react app, on which this starter code is built on.
 
 ## Available Scripts
 
