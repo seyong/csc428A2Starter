@@ -164,9 +164,9 @@ Lastly, we have written comments in the code to help understand it.
 
 ## Sending Feedback
 
-Read, play around with the code carefully to understand it first.
+Spend time reading, playing around with the code carefully to understand it first.
 If you have further questions, you can contact TAs at:
-Seyong Ha: seyongha@dgp.toronto.edu
+Seyong Ha: seyongha@dgp.toronto.edu,
 Mingming Fan: mfan@dgp.toronto.edu
 
 
