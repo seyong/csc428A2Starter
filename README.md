@@ -50,10 +50,11 @@ This will install all the dependency libraries.
 Third, in the project directory, type the following command:
 ### `npm start`
 
-This command will start the application in a browser tab and display the app in the tab
+This command will start the application in a browser tab and display the app in the tab. Imagelink: 
+[https://github.com/seyong/csc428A2Starter/blob/master/app\_start_img.png]
 ![Preview of the app in a browser](https://github.com/seyong/csc428A2Starter/blob/master/app_start_img.PNG).
 
-We have tested the code with the Chrome and Safari on different touch-screen platforms (e.g., laptops, android phones, iOS devices).
+We have tested the code with the Chrome(> version 55) and Safari on different touch-screen platforms (e.g., laptops, android phones, iOS devices).
 
 Fourth, in this experiment, you will examine the text entry performance of two types of keypbards on "smartwatch."
 
@@ -63,10 +64,10 @@ you need to think about how to position your laptop so that it simulates a smart
 
 If you decide to use a smartphone to carry out the experiment, then you need to think about use something (e.g., a cloth strip) to hold the phone to the user's wrist. You must then follow the instructions below:
 
-1) Check the IP address of your laptop (or desktop)   
-2) Ensure that your smartphone and your laptop (or desktop) are in the same network (e.g., same WiFi)
-3) Install and update your Chrome browser to the latest version
-4) Open the browser and type the following in the browser: IP:3000
+- 1) Check the IP address of your laptop (or desktop)   
+- 2) Ensure that your smartphone and your laptop (or desktop) are in the same network (e.g., same WiFi)
+- 3) Install and update your Chrome browser to the latest version
+- 4) Open the browser and type the following in the browser: IP:3000
 
 You should now see the same keyboard interface as you see in Step 3 on your laptop (or desktop).
 
@@ -82,4 +83,3 @@ Seyong Ha: seyongha@dgp.toronto.edu,
 Mingming Fan: mfan@dgp.toronto.edu
 
 For more information about React App, please visit this website: https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md
->>>>>>> 219fe96383b7bd4221c4d78821bf308658019247
