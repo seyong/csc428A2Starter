@@ -1,78 +1,193 @@
+/***************************************************
+* CSC428/2514 - St. George, Fall 2018 
+* 
+* File: keyboard.wip.js
+* Summary: This component will display the Zoomable keyboard.
+*	This keyboard will be zoomed as users touch/click. 
+*	Users can zoom twice. If users reached secone-level zoom by tapping twice, 
+*	they can select the key they want to input.
+*	React do not recommend Inherit officially, for the convenience, we apply inheritance
+*	in this code. 
+* The code is commented, and the comments provide information
+* about what each js file is doing.
+*
+* Written by: Seyong Ha, Mingming Fan, Sep. 2018
+*				Assignment2: Quantitative Analysis
+*				Updated at: NA
+****************************************************/
+
+/**
+ * Libraries
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Keymaps from './keys.js'
-import Keyboard from './keyboard.normal.js'
+import KeyboardNormal from './keyboard.normal.js'
 
-// Keyboard2,
-//
-class KeyboardZoom extends Keyboard {
+/**
+ * Zoomable Keyboard class extending KeyboardNormal
+ */
+class KeyboardZoom extends KeyboardNormal {
 
-	// Constructor, normal constructor in java
+	/**
+	 * Constructor
+	 * @param {} props: a paramater which enables you to access
+	 * 			values passed from parent Componenet(or Node).
+	 * 			e.g., if you pass 'value' as 5 in Watch component
+	 * 				<Watch value={5}/>
+	 * 				you can access by calling 'this.props.value'
+	 * 				props are immutable.
+	 */
 	constructor(props){
 		super(props);
+		// add more keyboard configuration.
 		this.config.zoomFactor = 2.2;
 		this.config.originalScale = 0.12;
 		this.config.maxZoom = 1.0;
 		this.config.resetOnMaxZoom =  true,
 		this.config.centerBias = 0.05
-		/*
-		this.config = {
-			resetTimeout: 1000,
-			animTime: 0.1,
-			useRealKeyboard: true,
-			maxKeyErrorDistance: 2,
-			minSwipeX: 40,
-			minSwipeY: 1
-		}*/
-		console.log(this.config);
+		if(window.PointerEvent){
+			this.onPointerUp = this.onPointerUp.bind(this);
+			this.onTouchStart = this.onTouchStart.bind(this);
+			this._onTouchMove = this._onTouchMove.bind(this);
+			this._onTouchEnd = this._onTouchEnd.bind(this);
+		}else{
+			this.onTouchStart = this.onTouchStart.bind(this);
+			this.onMouseDown = this.onMouseDown.bind(this);
+			this._onTouchMove = this._onTouchMove.bind(this);
+			this._onTouchEnd = this._onTouchEnd.bind(this);
+		}
 	}
 
-	onPointerDown = (e) => {
-		//console.log("[PointerDown]clientXY: "+e.clientX + ":"+e.clientY + " - pageXY: "+e.pageX+
-		//":" +e.pageY + "- screenXY: "+e.screenX+":"+e.screenY + "- offsetXY: "+e.nativeEvent.offsetX);
-		console.log("[PointerDown] xy - "+e.nativeEvent.x + "/"+e.nativeEvent.y);
-		//console.log("this.position.value: "+this.viewport.x +":"+this.viewport.y);
-		//console.log("currentZoomLevel: "+(this.position.width)+":"+this.original_dimensions.width);
-		// use e.nativeEvent.offsetX,Y for accuracy
-		//var x = e.nativeEvent.offsetX / (this.position.width/this.original_dimensions.width);
-		//var y = e.nativeEvent.offsetY / (this.position.height/this.original_dimensions.height);
-		//this.getKeyChar({x:x,y:y});
+	/**
+	 * Touch Event handlers
+	 * @param {*} e : to access javascript touchevent, 
+	 * 					you should access as 'e.nativeEvent'
+	 */
+	onTouchStart(e) {
+		console.log("onTouchStart");
+		const touch = e.nativeEvent.touches[0];
+		this.startX = touch.clientX;
+		this.startY = touch.clientY;
+		this._swipe = { x: touch.clientX, Y:touch.clientY };
+		this.setState({ swiped: false });
+		e.stopPropagation();
+	}
+
+	/**
+	 * Touch Event Handler 
+	 * @param {*} e : touch event object.
+	 */
+	_onTouchMove(e) {
+		console.log("onTouchMove");
+		if (e.changedTouches && e.changedTouches.length) {
+			const touch = e.nativeEvent.changedTouches[0];
+			this._swipe.swiping = true;
+		}
+		e.stopPropagation();
+	}
+
+	/**
+	 * TouchEvent Handler
+	 * @param {} e : touch event object.
+	 */
+	_onTouchEnd(e) {
+		console.log(e.nativeEvent.pointerType);
+		console.log("TouchEND");
+		const touch = e.nativeEvent.changedTouches[0];
+		var dx = touch.clientX - this.startX;
+		var dy = touch.clientY - this.startY;
+
+		//Swipe Event detection.
+		if (this._swipe.swiping){
+			if(Math.abs(dx) > this.config.minSwipeX){
+				if(dx > 0){
+					this.onSwipe("right");
+				}else if(dx < 0){
+					this.onSwipe("left");
+				}
+			}
+			else if(Math.abs(dy) > this.config.minSwipeY){
+				if(dy > 0){
+					this.onSwipe("down");
+				}else if(dy < 0){
+					this.onSwipe("up");
+				}
+			}
+			this.props.onSwiped && this.props.onSwiped();
+			this.setState({swiped:true});
+		}else{
+			//if not swipe event, process as 'keyclick' event
+			this.onFingerTouch(e);
+		}
+		this._swipe = {};
+		e.stopPropagation();
+	}
+
+	/**
+	 * PointerUp Event Handler, Use only for Debugging on laptop.
+	 * @param {*} e 
+	 *  We are using offsetX and offsetY. The origin of offsetX and offsetY is left,top of 'container' <div>
+	 */
+	onPointerUp(e){
+		console.log(e.nativeEvent.pointerType);
+		if(e.nativeEvent.pointerType === "touch"){
+			//Do nothing
+			return false;
+		}
+		e.stopPropagation();
+		console.log("[PointerUp] xy - "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 		this.onKeyClick(e);
 		//e.preventDefault();
 		//e.stopPropagation();
+		return false;
 	}
 
-	onSwipe(direction){
-		if(direction == "left"){
+	/**
+	 * MouseDown Event Handler, 
+	 *  same as PointerUp. This is implemented to test with your mouse on devtools of your browser.
+	 * @param {*} e 
+	 */
+	onMouseDown(e) {
+		console.log("[MouseDown] xy - "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+		this.onKeyClick(e);
+		e.stopPropagation();
+		return false;
+	}
+
+	/**
+	 * SwipeEvent Handler, manually called from the code.
+	 * 	Currently, we are using only 'left' and 'up' directions.
+	 * @param: direction, swiping direction.
+	 */
+	onSwipe = (direction) => {
+		if(direction === "left"){ // Delete character.
 			var key = "delete";
-			this.props.callback(key);
-		}
-		else if(direction == "right"){
-		}
-		else if(direction == "up"){
-			var imgSrc = document.getElementById("keyboardtype").src;
-			console.log("imgSrc: " + imgSrc);
-			if( imgSrc.split("/")[imgSrc.split("/").length - 1] == "ZoomBoard3b.png"){
-				document.getElementById("keyboardtype").src = "/images/symbols3b.png";
-			}
-			else{
-				document.getElementById("keyboardtype").src =  "/images/ZoomBoard3b.png";
-			}
-		}
-		else if(direction == "down"){
+			this.props.onKeyCharReceived(key);
+		}else if(direction === "up"){ // Change keyboard layout from one to another.
+			// You have two keyboard layout. Alphabet and Symbols.
+			var imgPath = (this.state.keyboardImg === this.imgs[0])? this.imgs[1] : this.imgs[0];
+			this.setState({
+				keyboardImg:imgPath 
+			})
 		}
 	}
 
+	/**
+	 * Callback in React Componenet lifecycle.
+	 * once all the component value has changed, this function is called.
+	 */
 	componentDidUpdate = () => {
-		console.log("========componentDidUpdate=======");
-		/*
-		window.setTimeout(() => {
-			console.log("timeout");
-		},500);*/
+		// For touch event, we cannot use offsetX and offsetY
+		// 	to calculate the touched point on the keyboard image, 
+		//  we stored the 'container' <div>'s left and top values on screen.
 		this.offsetTop = ReactDOM.findDOMNode(this).offsetTop;
 		this.offsetLeft = ReactDOM.findDOMNode(this).offsetLeft;
 	}
 
+	/**
+	 * Render function
+	 */
 	render(){
 		const size = this.getWindowDimension();
 		const style = {
@@ -86,30 +201,54 @@ class KeyboardZoom extends Keyboard {
 			color: this.state.overlayStyle.color,
 			fontSize: (size.height/1.2)+"px"
 		};
-		const font_height = {
-			fontSize : size.height / 1.2
-		};
-		console.log("[render] " +size.width);
-		return(
-			<div className="container" style={style} onKeyDown={this.onKeyDown} tabIndex="0"
-					onPointerDown = {this.onPointerDown}
-					onTouchStart={this._onTouchStart}
-					onTouchMove={this._onTouchMove}
-					onTouchEnd={this._onTouchEnd}>
-				<img id="keyboardtype" className="KB" alt="kb"
-					src="/images/ZoomBoard3b.png"  onLoad={this.onLoad}
-							style={this.state.imgStyle}/>
-				<div className="overlay" style={overlayStyle} dangerouslySetInnerHTML={{__html: this.state.overlayText}}>
+		if(window.PointerEvent){
+			return(
+				<div className="container" style = {style} tabIndex="-1"
+						onKeyDown={this.onKeyDown}
+						onTouchStart={this.onTouchStart}
+						onTouchMove={this._onTouchMove}
+						onTouchEnd={this._onTouchEnd}
+						onPointerUp = {this.onPointerUp}>
+					<img id="keyboardtype" className="KB" alt="kb"
+						src={this.state.keyboardImg} onLoad={this.onLoad}
+						style={this.state.imgStyle}/>
+					<div className="overlay" 
+						style={overlayStyle}
+						dangerouslySetInnerHTML={{
+							__html: this.state.overlayText
+						}}></div>
 				</div>
-			</div>
-		)
+			)
+		}else{ //else
+			return(
+				<div className="container" style = {style} tabIndex="-1"
+						onKeyDown={this.onKeyDown}
+						onMouseDown = {this.onMouseDown}
+						onTouchStart={this._onTouchStart}
+						onTouchMove={this._onTouchMove}
+						onTouchEnd={this._onTouchEnd}>
+					<img id="keyboardtype" className="KB" alt="kb"
+						src={this.state.keyboardImg} onLoad={this.onLoad}
+						style={this.state.imgStyle}/>
+					<div className="overlay" 
+						style={overlayStyle}
+						dangerouslySetInnerHTML={{
+							__html: this.state.overlayText
+						}}></div>
+				</div>
+			)
+		}
 	}
 
 
+	/**
+	 * KeyClick Event Handler on the keyboard image.
+	 *  Zoom level and and center of zoomed image are computed here.
+	 *  More details in doZoom function();
+	 * @param e: Touch / Pointer Event 
+	 */
 	onKeyClick = (e) => {
-		//e.preventDefault();
-		//e.stopPropagation();
-		// console.log("[2Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+		e.stopPropagation();
 
 		var currentZoomX = this.getXZoom();
 		var currentZoomY = this.getYZoom();
@@ -118,27 +257,25 @@ class KeyboardZoom extends Keyboard {
 		var scaleFactor = this.config.zoomFactor;
 		var centerBias = this.config.centerBias;
 		var maxZoom = this.config.maxZoom;
-		console.log("in WIP - " +this.config.zoomFactor + ":" + this.config.centerBias);
 
 		this.clearResetTimeout();
-		//Assuming mouse
-		if(this.config.gisTouchEnabled){
-			console.log("true");
-		}else{
-			console.log("viewport in wip: "+this.viewport.width + ":"+this.viewport.height);
-			var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
-			var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
-			 console.log("WIP[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
-			 console.log("WIP[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			 console.log("WIP[Click before doZoom] xy => "+x + "/"+y);
-			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
-			this.resetTimeoutFunc();
-		}
+		//console.log("viewport in wip: "+this.viewport.width + ":"+this.viewport.height);
+		var x = e.nativeEvent.offsetX / currentZoomX + this.viewport.x;
+		var y = e.nativeEvent.offsetY / currentZoomY + this.viewport.y;
+		//	console.log("WIP[Click before doZoom] eventOffset => "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
+		//	console.log("WIP[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
+			console.log("WIP[Click before doZoom] xy => "+x + "/"+y);
+		this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
+		this.resetTimeoutFunc();
 		return false;
 	}
 
 
-	onFingerTouch = (e) => {
+	/**
+	 * For Touch Event
+	 */
+	onFingerTouch(e){
+		console.log("OnFingerTouch");
 		//e.preventDefault();
 		//e.stopPropagation();
 		var currentZoomX = this.getXZoom();
@@ -164,10 +301,11 @@ class KeyboardZoom extends Keyboard {
 			var y =  (touch.pageY - this.offsetTop) / currentZoomY + this.viewport.y;
 			//console.log("[Click before doZoom] touchXY => "+touch.clientX + "/"+touch.clientY);
 			// console.log("[Click before doZoom] curZoom and Viewport => "+ currentZoomX + "/" + currentZoomY + "/"+ this.viewport.x + "/"+this.viewport.y);
-			// console.log("[Click before doZoom] xy => "+x + "/"+y);
+			console.log("[Click before doZoom] xy => "+x + "/"+y);
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
+		e.stopPropagation();
 		return false;
 	}
 
@@ -177,12 +315,22 @@ class KeyboardZoom extends Keyboard {
 		this.resetTimeout = window.setTimeout(this.reset,resetTimeout);
 	}
 
+	/**
+	 * Zoom Function for Pointer/Mouse Event
+	 * @param x: x value of input point
+	 * @param y: y value of input point
+	 * @param scaleFactor: constant, how deep your keyboard will be zoomed.
+	 * @param currentZoomVal: currenet zoom level
+	 * @param maxZoom: if a zoom value exceeded maxZoom, users has to select the key
+	 * @param centerBias:
+	 * 
+	 */
 	doZoom = (x,y,scaleFactor,currentZoomVal,maxZoom,centerBias) => {
 		//var zoomtouch_event = jQuery.Event("zb_zoom")
 		//zoomtouch_event.x = x;, zoomtouch_event.y = y;
 		//this.element.trigger(zoomtouch_event);
 
-		// console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
+		 console.log("[Debug] scaleFactor/ CurrnetZoomVal / maxZoom -> " + scaleFactor + "/ "+currentZoomVal +"/ "+maxZoom);
 		if(scaleFactor * currentZoomVal > maxZoom){
 			//console.log("Exceeded maxZoom ");
 			var key = this.getKeyChar({x:x,y:y});
@@ -197,7 +345,7 @@ class KeyboardZoom extends Keyboard {
 			this.reset();
 			return;
 		}else{
-			this.in_starting_position = false;
+			this.inStartingPosition = false;
 			var newViewportWidth = this.viewport.width / scaleFactor ;
 			var newViewportHeight = this.viewport.height / scaleFactor;
 
@@ -222,6 +370,7 @@ class KeyboardZoom extends Keyboard {
 		}
 	}
 
+	/*
 	getKeyChar(point) {
 		console.log("point.x: " + point.x + "; point.y: " + point.y);
 		var min_distance = false, min_distance_key = null;
@@ -245,13 +394,13 @@ class KeyboardZoom extends Keyboard {
 			}
 		}
 		return min_distance_key;
-	}
+	}*/
 
 	getXZoom = () =>{
-		return this.position.width / this.original_dimensions.width;
+		return this.position.width / this.state.originalDimensions.width;
 	}
 	getYZoom = () =>{
-		return this.position.height / this.original_dimensions.height;
+		return this.position.height / this.state.originalDimensions.height;
 	}
 	getZoom = () => {
 		return Math.max(this.getXZoom(), this.getYZoom());

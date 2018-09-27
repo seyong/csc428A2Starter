@@ -1,16 +1,27 @@
-// FileName: keys.js
-// Description:
-//  raw_keys and raw_keys_sym objects have information of each keys in keymaps.
+/***************************************************
+* CSC428/2514 - St. George, Fall 2018 
+* 
+* File: keys.js
+* Summary: This js file contains keycharacter information on keyboard image. 
+* 	raw_keys and raw_keys_sym objects have information of each keys in keymaps.
 //	We provide two different type of keymaps.
 //	raw_keys object has information of alphabet character keys
-//	raw_keys_sym object has information of nubmer and symbol character keys
-// Each values in the object has following structure
+//	raw_keys_sym object has information of nubmer and symbol character keys.
+// 	Each values in the object has following structure
 //	x: left-most in pixel coordinate
 //	y: top-most in pixel coordinate
 //	width: width of assigned key in keyboard image
 //	height: height of assigned key in keyboard image
 //
 //	Details are provided in README
+* 
+* The code is commented, and the comments provide information
+* about what each js file is doing.
+*
+* Written by: Seyong Ha, Mingming Fan, Sep. 2018
+*				Assignment2: Quantitative Analysis
+*				Updated at: NA
+****************************************************/
 
 var raw_keys = [
 42,143,93,93,"q",
@@ -114,5 +125,7 @@ window.keys_sym = keys_sym;
 
 
 const Keymaps = {keys: keys, keys_sym: keys_sym};
-// We export two keymaps as one object, called Keymaps
+// We export two keymaps as one object, called Keymaps,
+// you will import Keymaps object in other files.
+// To access each keyboard, use 'Keymaps.keys' or 'Keymaps.keys_sym'
 export default Keymaps;

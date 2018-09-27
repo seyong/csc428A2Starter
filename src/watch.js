@@ -1,19 +1,37 @@
+/***************************************************
+* CSC428/2514 - St. George, Fall 2018 
+* 
+* File: watch.js
+* Summary: Watch Component
+* 
+* The code is commented, and the comments provide information
+* about what each js file is doing.
+*
+* Written by: Seyong Ha, Mingming Fan, Sep. 2018
+*				Assignment2: Quantitative Analysis
+*				Updated at: NA
+****************************************************/
+
+/**
+ * Libraries
+ */
 import React from 'react';
 import './index.css';
 import TextArea from './textarea'
 import KeyboardNormal from './keyboard.normal'
 import KeyboardZoom from './keyboard.wip'
 
-// FileName: watch.js file
-// Description:
-//
+/**
+ * Functions
+ */
 
-//	@function: deviceIndependenceSize
-//	@params:
-//		ppi : device independent pixel per inch values.
-//		watchSize: Target AppleWatch size. Only two sizes are supported, 38mm and 42mm
-//	If you pass 'ppi' and 'watchSize' properties to Watch component,
-//	This function will help you calculate Watch display width and height in pixels.
+/**
+ * Calculate watch size (width and height) in pixels.
+ * 	if you decide to use exact AppleWatch size, use this function to get width and height.
+ * @param: ppi , your device independent pixel per inch. Can be acheived from the web.
+ * @param: watchSize, default apple watch size, 38mm or 42mm. 
+ * 			other size value will be return zero in size.
+ */
 const deviceIndependenceSize = (ppi,watchSize) => {
 	var width,height,deviceWidthInPixel,deviceHeightInPixel;
 	if(watchSize === 42){
@@ -37,31 +55,69 @@ const deviceIndependenceSize = (ppi,watchSize) => {
 	}
 }
 
-// Watch component renders a smartwatch interface
+/**
+ * Download typed text and target phrase
+ * @param {*} text: 
+ * @param {*} name:
+ * @param {*} type:
+ */
+function download(text, name, type) {
+	// console.log(JSON.parse(text));
+	var a = document.createElement("a");
+	var file = new Blob([text], {type: type});
+	a.href = URL.createObjectURL(file);
+	a.download = name;
+	a.click();
+}
+
+/**
+ * Watch Class 
+ * This class extends React.Component
+ */
 class Watch extends React.Component {
 
+	/**
+	 * Constructor
+	 * @param {} props: a paramater which enables you to access
+	 * 			values passed from parent Componenet(or Node).
+	 * 			e.g., if you pass 'value' as 5 in Watch component
+	 * 				<Watch value={5}/>
+	 * 				you can access by calling 'this.props.value'
+	 * 				props are immutable.
+	 */
 	constructor(props){
 		super(props);
+		
 		if(props.size !== undefined && props.devicePPI !== undefined){
+			// you are going to use pre-defined Watch size.
 			this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
 		}else{
 			// you are not going to use pre-defined Watch size.
 		}
 
 		// React Component States.
-		// inputChar: a variable containing your input character from Keyboard.
-		// if 'inputChar' value has changed by onKeyCharReceived function,
-		// Watch Component will re-render the interface
+		// inputPhrase: a variable containing all characters typed by users.
+		// inputChar: a variable containing your input character from the Keyboard.
+		// if 'inputPhrase' or 'inputChar' value has changed by onKeyCharReceived(),
+		// Watch Component will re-render the interface if the state has changed by calling
+		// 	setState({});
 		this.state = {
-			inputPhrase: ""
+			inputPhrase: "",
+			inputChar: ""
 		};
 
 		//add the target phrases here or load them from external files
 		this.targetPhrase =  "target phrase one";
 	}
 
+	/**
+	 * Callback for input character changes.
+	 * @param {} c: changed character
+	 * 
+	 * This callback will be passed to child (Keyboard components, in our case).
+	 * when the input character received, it changes inputPhrase state.
+	 */
 	onKeyCharReceived = (c) => {
-		//console.log("[Watch onHandleChange "+c);
 		this.setState({inputChar : c});
 		this.state.inputPhrase += c;
 	};
@@ -79,6 +135,12 @@ class Watch extends React.Component {
 	}
 
 
+	/**
+	 * Render function()
+	 * This function will return UI of the system.
+	 *	It will return different text-entry system, depending on which
+	 *	type property you did pass from index.js 
+	 */
 	render(){
 		// style={{}} is an inline styling with calculated screen size
 		if(this.props.type === 'normal'){
@@ -103,6 +165,8 @@ class Watch extends React.Component {
 			// exception
 		}
 
+		// if you decide to use AppleWatch size, then comment above code and 
+		//	uncomment following blocks.
 		/*
 		if(this.props.type === 'normal'){
 			return(
@@ -122,15 +186,6 @@ class Watch extends React.Component {
 			// exception
 		}*/
 	}
-}
-
-function download(text, name, type) {
-	 // console.log(JSON.parse(text));
-	 var a = document.createElement("a");
-	 var file = new Blob([text], {type: type});
-	 a.href = URL.createObjectURL(file);
-	 a.download = name;
-	 a.click();
 }
 
 export default Watch
