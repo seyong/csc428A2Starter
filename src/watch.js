@@ -111,15 +111,6 @@ class Watch extends React.Component {
 
 		//add the target phrases here or load them from external files
 		this.targetPhrase =  "target phrase one";
-
-
-		// For Debug
-		/*
-		var size42 = deviceIndependenceSize(112,42);
-		console.log("AppleWatch 42mm => "+size42.width +"/"+size42.height);
-		var size38 = deviceIndependenceSize(112,38);
-		console.log("AppleWatch 38mm => "+size38.width +"/"+size38.height);
-		*/
 	}
 
 	/**
@@ -165,22 +156,42 @@ class Watch extends React.Component {
 				</div>
 			);
 		}else if(this.props.type === 'zoom'){
-			//the save button below is only to demonstrate to you how to save data
-			// to files.
-			//TODO: You need to remove it in your experiment and figure out another way
-			// call this.saveData function to save user's data
 			return(
 				<div className="watch">
 				  <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
 					<KeyboardZoom originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
-				
+					//the save button below is only to demonstrate to you how to save data
+					// to files.
+					//TODO: You need to remove it in your experiment and figure out another way
+					// call this.saveData function to save user's data
 					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);
 		}else{
 			// exception
 		}
+
+		// if you decide to use AppleWatch size, then comment above code and
+		//	uncomment following blocks.
+		/*
+		if(this.props.type === 'normal'){
+			return(
+				<div className="watch" style={{width:this.screenSize.width, height:this.screenSize.height}} >
+					<TextArea inputChar={this.state.inputChar}/>
+					<KeyboardNormal original_scale={this.props.original_scale} displaySize = {this.screenSize} onKeyCharReceived ={this.onKeyCharReceived}/>
+				</div>
+			);
+		}else if(this.props.type === 'zoom'){
+			return(
+				<div className="watch" style={{width:this.screenSize.width, height:this.screenSize.height}} >
+					<TextArea inputChar={this.state.inputChar}/>
+					<KeyboardZoom original_scale={this.props.original_scale} displaySize = {this.screenSize} onKeyCharReceived ={this.onKeyCharReceived}/>
+				</div>
+			);
+		}else{
+			// exception
+		}*/
 	}
 }
 
