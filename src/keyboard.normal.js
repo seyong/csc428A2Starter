@@ -152,7 +152,7 @@ class KeyboardNormal extends React.Component {
 		const touch = e.nativeEvent.changedTouches[0];
 		var dx = touch.clientX - this.startX;
 		var dy = touch.clientY - this.startY;
-		console.log("[OnTouchEnd] XY: "+touch.clientX + "/"+touch.clientY + "/"+dx+"/"+dy);
+
 		//Swipe Event detection.
 		if (this._swipe.swiping){
 			if(Math.abs(dx) > this.config.minSwipeX){
@@ -173,9 +173,7 @@ class KeyboardNormal extends React.Component {
 			this.setState({swiped:true});
 		}else{
 			//if not swipe event, process as 'keyclick' event
-			var x = (touch.clientX - this.offsetLeft) / (this.position.width/this.state.originalDimensions.width);
-			var y = (touch.clientY - this.offsetTop) / (this.position.height/this.state.originalDimensions.height);
-			this.onKeyClick({x:x,y:y});
+			this.onKeyClick(e);
 		}
 		this._swipe = {};
 		e.stopPropagation();
@@ -444,11 +442,9 @@ class KeyboardNormal extends React.Component {
 	 * KeyClick event on the keyboard image.
 	 */
 	onKeyClick = (pt) => {
-		console.log("[onKeyClick] ..."+pt.x);
 		var key = this.getKeyChar(pt);
-
 		if(key != null){
-			console.log("[onKeyClick] "+key+" typed.");
+			console.log("[Key Presseed] "+key);
 			this.props.onKeyCharReceived(key);
 			this.flashKey(key);
 		}
@@ -486,7 +482,6 @@ class KeyboardNormal extends React.Component {
 		for(var i=0, len = keys.length; i<len; i++){
 			var keychar = keys[i];
 			console.log("[keychar]: "+keychar);
-			//console.log("Point XY: "+pt.x+"/"+pt.y);
 			if(keychar.x <= pt.x && keychar.y <= pt.y && keychar.x + keychar.width >= pt.x && keychar.y + keychar.height >= pt.y)
 			{
 				//if point is within particular key.
