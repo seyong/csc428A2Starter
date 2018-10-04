@@ -137,7 +137,7 @@ class KeyboardNormal extends React.Component {
 	 */
 	_onTouchMove(e) {
 		if (e.changedTouches && e.changedTouches.length) {
-			const touch = e.nativeEvent.changedTouches[0];
+			//const touch = e.nativeEvent.changedTouches[0];
 			this._swipe.swiping = true;
 		}
 		e.stopPropagation();
@@ -339,16 +339,16 @@ class KeyboardNormal extends React.Component {
 			color: this.state.overlayStyle.color,
 			fontSize:(size.height/1.2)+"px"
 		};
-		const fontHeight = {
-			fontSize : size.height/1.2
-		}
+		//const fontHeight = {
+		//	fontSize : size.height/1.2
+		//}
 		const imgStyle = {
 			width:size.width,
 			height:size.height,
 			top: this.state.top,
 			left: this.state.left
 		}
-		console.log("[Rendering...] ");
+		console.log("[Rendering...] " + size.width +"/"+size.height);
 		// if your browser supports PointerEvent...
 		if(window.PointerEvent){
 			return(
@@ -552,14 +552,23 @@ class KeyboardNormal extends React.Component {
 			},
 			overlayText: text
 		});
+		/*
+		this.flashTimeout = setTimeout(
+			function() {
+				this.setState({
+				overlayStyle:{
+					opacity: 0}})
+			}
+			.bind(this),
+			duration
+		);*/
 		this.flashTimeout = setTimeout(
 			(() => {
 				this.setState({
 				overlayStyle:{
 					opacity: 0}})
 			})
-			.bind(this),
-			duration
+			,duration
 		);
 	}
 }
