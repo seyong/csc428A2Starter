@@ -63,10 +63,8 @@ ReactDOM.render(
 	// if this default size looks too small on your test device,
 	// change it accordingly.
 
-	// originalScale 0.112 => size 42mm
-	// originalScale 0.103 => size 38mm
-	<Watch originalScale={0.15} type={'zoom'} />,
-	//<Watch originalScale={0.112} type={'normal'} />,
+	//<Watch originalScale={0.15} type={'zoom'} />,
+	<Watch originalScale={0.15} type={'normal'} />,
 	document.getElementById("root")
 );
 */
