@@ -35,16 +35,10 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Root from './Root'
 import './index.css';
 import Watch from './watch'
 
 
-ReactDOM.render(<Root />,
-	document.getElementById('root'));
-//registerServiceWorker required?
-
-/*
 ReactDOM.render(
 	// type property will determine which version of text entry system
 	// you are going to use.
@@ -67,4 +61,3 @@ ReactDOM.render(
 	//<Watch originalScale={0.15} type={'normal'} />,
 	document.getElementById("root")
 );
-*/
