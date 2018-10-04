@@ -21,7 +21,7 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Keymaps from './keys.js'
+//import Keymaps from './keys.js'
 import KeyboardNormal from './keyboard.normal.js'
 
 /**
@@ -45,7 +45,7 @@ class KeyboardZoom extends KeyboardNormal {
 		this.config.zoomFactor = 2.2;
 		this.config.originalScale = this.props.originalScale;
 		this.config.maxZoom = 1.0;
-		this.config.resetOnMaxZoom =  true,
+		this.config.resetOnMaxZoom =  true;
 		this.config.centerBias = 0.05
 		if(window.PointerEvent){
 			this.onPointerUp = this.onPointerUp.bind(this);
@@ -82,7 +82,7 @@ class KeyboardZoom extends KeyboardNormal {
 	_onTouchMove(e) {
 		console.log("onTouchMove");
 		if (e.changedTouches && e.changedTouches.length) {
-			const touch = e.nativeEvent.changedTouches[0];
+			//const touch = e.nativeEvent.changedTouches[0];
 			this._swipe.swiping = true;
 		}
 		e.stopPropagation();
