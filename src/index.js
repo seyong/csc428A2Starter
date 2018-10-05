@@ -35,14 +35,17 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Root from './Root'
+import App from './App.js'
+import { BrowserRouter} from 'react-router-dom'
 import './index.css';
-import Watch from './watch'
 
 
-ReactDOM.render(<Root />,
-	document.getElementById('root'));
-//registerServiceWorker required?
+ReactDOM.render(
+	<BrowserRouter>
+		<App />
+	</BrowserRouter>,
+	document.getElementById('root')
+);
 
 /*
 ReactDOM.render(

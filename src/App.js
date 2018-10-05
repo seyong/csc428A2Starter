@@ -1,12 +1,13 @@
 import React from 'react';
-import Watch from './Watch';
+import { Route } from 'react-router-dom';
+import Watch from './watch.js';
 
 class App extends React.Component{
     render(){
         return (
             <div>
-                <Route exact path="/" component={Watch}/>
-                <Route path="/normal" component={Watch}/>
+                <Route exact path="/" render = {(props) => <Watch {...props} originalScale={0.15} type={'normal'}/>} />
+                <Route exact path="/:type/:scaleVal" component={Watch}/> 
             </div>
         )
     }

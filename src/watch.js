@@ -90,14 +90,16 @@ class Watch extends React.Component {
 	 */
 	constructor(props){
 		super(props);
-
 		if(props.size !== undefined && props.devicePPI !== undefined){
 			// you are going to use pre-defined Watch size.
 			this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
-		}else{
+		}else if(props.originalScale !== undefined && props.type !== undefined){
 			// you are not going to use pre-defined Watch size.
 		}
-
+		this.type = this.props.match.params.type;
+		this.originalScale = this.props.match.params.scaleVal;
+		console.log("[Watch] type: "+this.type);
+		console.log("[Watch] originalScale: "+this.originalScale);
 		// React Component States.
 		// inputPhrase: a variable containing all characters typed by users.
 		// inputChar: a variable containing your current input character from the Keyboard.
@@ -155,16 +157,16 @@ class Watch extends React.Component {
 	 */
 	render(){
 		// style={{}} is an inline styling with calculated screen size
-		if(this.props.type === 'normal'){
+		if(this.type === 'normal'){
 			return(
 				<div className="watch">
 					 <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
-					<KeyboardNormal originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
+					<KeyboardNormal originalScale={this.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
 					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);
-		}else if(this.props.type === 'zoom'){
+		}else if(this.type === 'zoom'){
 			//the save button below is only to demonstrate to you how to save data
 			// to files.
 			//TODO: You need to remove it in your experiment and figure out another way
@@ -173,8 +175,7 @@ class Watch extends React.Component {
 				<div className="watch">
 				  <label>{this.targetPhrase}</label>
 					<TextArea inputChar={this.state.inputChar}/>
-					<KeyboardZoom originalScale={this.props.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
-				
+					<KeyboardZoom originalScale={this.originalScale} onKeyCharReceived ={this.onKeyCharReceived}/>
 					<button onClick={this.saveData}>SAVE</button>
 				</div>
 			);

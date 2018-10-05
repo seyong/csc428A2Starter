@@ -44,7 +44,6 @@ class KeyboardNormal extends React.Component {
 	 */
 	constructor(props){
 		super(props);
-
 		/**
 		 * This components more state values.
 		 * - originalScale: a scale value to resize a keyboard image.
