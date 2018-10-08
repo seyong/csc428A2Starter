@@ -551,16 +551,6 @@ class KeyboardNormal extends React.Component {
 			},
 			overlayText: text
 		});
-		/*
-		this.flashTimeout = setTimeout(
-			function() {
-				this.setState({
-				overlayStyle:{
-					opacity: 0}})
-			}
-			.bind(this),
-			duration
-		);*/
 		this.flashTimeout = setTimeout(
 			(() => {
 				this.setState({

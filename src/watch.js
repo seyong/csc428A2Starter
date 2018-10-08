@@ -26,6 +26,7 @@ import KeyboardZoom from './keyboard.wip'
  */
 
 /**
+ * @Deprecated.
  * Calculate watch size (width and height) in pixels.
  * 	if you decide to use exact AppleWatch size, use this function to get width and height.
  * @param: ppi , your device independent pixel per inch. Can be acheived from the web.
@@ -90,14 +91,15 @@ class Watch extends React.Component {
 	 */
 	constructor(props){
 		super(props);
-		if(props.size !== undefined && props.devicePPI !== undefined){
-			// you are going to use pre-defined Watch size.
-			this.screenSize = deviceIndependenceSize(this.props.devicePPI,this.props.size);
-		}else if(props.originalScale !== undefined && props.type !== undefined){
-			// you are not going to use pre-defined Watch size.
-		}
-		this.type = this.props.match.params.type;
-		this.originalScale = this.props.match.params.scaleVal;
+
+		//Your URL parameter can be accessed with following syntax.
+		console.log(this.props.type);
+		console.log(this.props.type===undefined);
+		this.type = (this.props.type === undefined) ? this.props.match.params.type : this.props.type;
+		this.originalScale = (this.props.originalScale === undefined)?this.props.match.params.scaleVal : this.props.originalScale;
+
+		//this.type = this.props.match.params.type;
+		//this.originalScale = this.props.match.params.scaleVal;
 		console.log("[Watch] type: "+this.type);
 		console.log("[Watch] originalScale: "+this.originalScale);
 		// React Component States.
@@ -115,7 +117,8 @@ class Watch extends React.Component {
 		this.targetPhrase =  "target phrase one";
 
 
-		// For Debug
+		// For Debug, uncomment only if you want to measure exact width and height in pixels.
+		// Following codes won't be affected on any of your code. 
 		/*
 		var size42 = deviceIndependenceSize(112,42);
 		console.log("AppleWatch 42mm => "+size42.width +"/"+size42.height);
@@ -181,6 +184,11 @@ class Watch extends React.Component {
 			);
 		}else{
 			// exception
+			return(
+				<div>
+					<p> [Rendering Failed] You have got wrong parameters. Check your 'type' property </p>
+				</div>
+			)
 		}
 	}
 }

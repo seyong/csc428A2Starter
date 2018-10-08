@@ -27,7 +27,7 @@
 *
 * Written by: Seyong Ha, Mingming Fan, Sep. 2018
 *				Assignment2: Quantitative Analysis
-*				Updated at: NA
+*				Updated at: Oct 4th. 2018 (routing function added)
 ****************************************************/
 
 /**
@@ -39,35 +39,13 @@ import App from './App.js'
 import { BrowserRouter} from 'react-router-dom'
 import './index.css';
 
-
+/**
+ *  Now, we have routing function in our Starter code. 
+ *  Details are implmented in 'App.js' file.
+ */
 ReactDOM.render(
 	<BrowserRouter>
 		<App />
 	</BrowserRouter>,
 	document.getElementById('root')
 );
-
-/*
-ReactDOM.render(
-	// type property will determine which version of text entry system
-	// you are going to use.
-	//	'normal'	: baseline condition, normal keyboard
-	//	'zoom' 		: A keyboard has a zoom function.
-
-	//If you want to simulate Apple Watch Series 3,
-	//	use the following example code by passing 'size'
-	// and your 'devicePPI' as Watch component's properties.
-	//	For example, to simulate the Apple Watch Series 3 , 42mm
-	//	on your MacBookPro Retina:
-	//		<Watch size={42} devicePPI={112} type={YourType}/>
-	//else if you want to simulate a different sized watch,
-	// 	pass originalScale property to Watch Component as a size
-	// 	the default value is 0.15
-	// if this default size looks too small on your test device,
-	// change it accordingly.
-
-	//<Watch originalScale={0.15} type={'zoom'} />,
-	<Watch originalScale={0.15} type={'normal'} />,
-	document.getElementById("root")
-);
-*/
