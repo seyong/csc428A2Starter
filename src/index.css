@@ -1,4 +1,17 @@
+html,body{
+    height: 100%;
+}
+
+#root{
+    height: 100%;
+}
+
+.wrapper{
+    height: 100%;
+}
+
 .watch{
+    height: 100%;
 }
 
 .container{

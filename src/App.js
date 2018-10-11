@@ -13,6 +13,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import Watch from './watch.js';
+import MetaTags from 'react-meta-tags'
 
 class App extends React.Component{
     /**
@@ -38,7 +39,10 @@ class App extends React.Component{
         // 2. localhost:3000/type/scaleVal. > e.g. http://localhost:3000/normal/0.15
         // You can add more rules.
         return (
-            <div>
+            <div className="wrapper">
+                <MetaTags>
+                    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
+                </MetaTags>
                 <Route exact path="/" render = {(props) => <Watch {...props} originalScale={0.15} type={'normal'}/>} />
                 <Route exact path="/:type/:scaleVal" component={Watch}/> 
             </div>

@@ -66,13 +66,14 @@ class KeyboardZoom extends KeyboardNormal {
 	 * 					you should access as 'e.nativeEvent'
 	 */
 	onTouchStart(e) {
-		console.log("onTouchStart");
-		const touch = e.nativeEvent.touches[0];
-		this.startX = touch.clientX;
-		this.startY = touch.clientY;
-		this._swipe = { x: touch.clientX, Y:touch.clientY };
-		this.setState({ swiped: false });
-		e.stopPropagation();
+		console.log("touchstart");
+		this.isMoving = false;
+		//const touch = e.nativeEvent.touches[0];
+		if(this.inStartingPosition && e.nativeEvent.touches.length === 1){
+			this.startX = e.nativeEvent.touches[0].pageX;
+			this.startY = e.nativeEvent.touches[0].pageY;
+			this.isMoving = true;
+		}
 	}
 
 	/**
@@ -80,12 +81,42 @@ class KeyboardZoom extends KeyboardNormal {
 	 * @param {*} e : touch event object.
 	 */
 	_onTouchMove(e) {
-		console.log("onTouchMove");
-		if (e.changedTouches && e.changedTouches.length) {
-			//const touch = e.nativeEvent.changedTouches[0];
-			this._swipe.swiping = true;
+		console.log("touchmove");
+		if(this.isMoving === true){
+			var x = e.nativeEvent.touches[0].pageX;
+			var y = e.nativeEvent.touches[0].pageY;
+			var dx = this.startX - x; 
+			var dy = this.startY - y;
+			console.log("DX: "+dx+"/"+dy);
+			if(Math.abs(dx) >= this.config.minSwipeX){
+				if(dx > 0){
+					this.onSwipe("left");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+					console.log("swipeleft");
+				}else{
+					this.onSwipe("right");
+					console.log("swiperight");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+				}
+			}else if(Math.abs(dy) >= this.config.minSwipeY){
+				if(dy > 0){
+					this.onSwipe("up");
+					console.log("swipeup");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+				}else{
+					this.onSwipe("down");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+				}
+			}
 		}
-		e.stopPropagation();
 	}
 
 	/**
@@ -93,36 +124,17 @@ class KeyboardZoom extends KeyboardNormal {
 	 * @param {} e : touch event object.
 	 */
 	_onTouchEnd(e) {
-		console.log(e.nativeEvent.pointerType);
 		console.log("TouchEND");
-		const touch = e.nativeEvent.changedTouches[0];
-		var dx = touch.clientX - this.startX;
-		var dy = touch.clientY - this.startY;
-
-		//Swipe Event detection.
-		if (this._swipe.swiping){
-			if(Math.abs(dx) > this.config.minSwipeX){
-				if(dx > 0){
-					this.onSwipe("right");
-				}else if(dx < 0){
-					this.onSwipe("left");
-				}
-			}
-			else if(Math.abs(dy) > this.config.minSwipeY){
-				if(dy > 0){
-					this.onSwipe("down");
-				}else if(dy < 0){
-					this.onSwipe("up");
-				}
-			}
-			this.props.onSwiped && this.props.onSwiped();
-			this.setState({swiped:true});
+		if(this.justGestured === true){
+			this.justGestured = false;
+			e.preventDefault()
+			e.stopPropagation();
+			return;
 		}else{
-			//if not swipe event, process as 'keyclick' event
+			e.preventDefault()
+			e.stopPropagation();
 			this.onFingerTouch(e);
 		}
-		this._swipe = {};
-		e.stopPropagation();
 	}
 
 	/**
@@ -152,6 +164,7 @@ class KeyboardZoom extends KeyboardNormal {
 	onMouseDown(e) {
 		console.log("[MouseDown] xy - "+e.nativeEvent.offsetX + "/"+e.nativeEvent.offsetY);
 		this.onKeyClick(e);
+		e.preventDefault();
 		e.stopPropagation();
 		return false;
 	}
@@ -225,7 +238,7 @@ class KeyboardZoom extends KeyboardNormal {
 				<div className="container" style = {style} tabIndex="-1"
 						onKeyDown={this.onKeyDown}
 						onMouseDown = {this.onMouseDown}
-						onTouchStart={this._onTouchStart}
+						onTouchStart={this.onTouchStart}
 						onTouchMove={this._onTouchMove}
 						onTouchEnd={this._onTouchEnd}>
 					<img id="keyboardtype" className="KB" alt="kb"
@@ -249,6 +262,7 @@ class KeyboardZoom extends KeyboardNormal {
 	 * @param e: Touch / Pointer Event 
 	 */
 	onKeyClick = (e) => {
+		e.preventDefault();
 		e.stopPropagation();
 
 		var currentZoomX = this.getXZoom();
@@ -306,7 +320,7 @@ class KeyboardZoom extends KeyboardNormal {
 			this.doZoom(x,y,scaleFactor,currentZoomVal,maxZoom,centerBias);
 			this.resetTimeoutFunc();
 		}
-		e.stopPropagation();
+		//e.stopPropagation();
 		return false;
 	}
 
@@ -357,11 +371,11 @@ class KeyboardZoom extends KeyboardNormal {
 										this.viewport.width;
 			var biasedViewportY = y- (newViewportHeight * (y - this.viewport.y))/
 										this.viewport.height;
-			console.log("doZoom in wip: "+this.viewport.width + ":"+this.viewport.height);
-			console.log("doZoom in wip: "+this.viewport.x + ":"+this.viewport.y);
-			console.log("doZoom in wip: "+scaleFactor);
-			console.log("doZoom in wip: "+newViewportWidth+ ":"+newViewportHeight);
-			console.log("doZoom in wip: "+centeredX + ":" + centeredY);
+			//console.log("doZoom in wip: "+this.viewport.width + ":"+this.viewport.height);
+			//console.log("doZoom in wip: "+this.viewport.x + ":"+this.viewport.y);
+			//console.log("doZoom in wip: "+scaleFactor);
+			//console.log("doZoom in wip: "+newViewportWidth+ ":"+newViewportHeight);
+			//console.log("doZoom in wip: "+centeredX + ":" + centeredY);
 			this.setViewPort({
 				width: newViewportWidth,
 				height: newViewportHeight,
@@ -370,32 +384,6 @@ class KeyboardZoom extends KeyboardNormal {
 			});
 		}
 	}
-
-	/*
-	getKeyChar(point) {
-		console.log("point.x: " + point.x + "; point.y: " + point.y);
-		var min_distance = false, min_distance_key = null;
-		var max_key_error_distance_squared = Math.pow(this.config.max_key_error_distance, 2);
-		console.log("max_key_error_distance_squared: " + max_key_error_distance_squared);
-		var keys = Keymaps.keys;
-		for(var i = 0, len = keys.length; i<len; i++) {
-			var key = keys[i];
-			if(key.x <= point.x && key.y <= point.y && key.x+key.width >= point.x && key.y + key.height >= point.y) {
-				return key.key;
-			} else {
-				var key_center_x = key.x + key.width/2;
-				var key_center_y = key.y + key.height/2;
-				var dx = point.x - key_center_x;
-				var dy = point.y - key_center_y;
-				var dsquared = Math.pow(dx, 2) + Math.pow(dy, 2);
-				if((min_distance_key === null || dsquared < min_distance) && dsquared < max_key_error_distance_squared * Math.pow(Math.min(key.width, key.height), 2)) {
-					min_distance = dsquared;
-					min_distance_key = key.key;
-				}
-			}
-		}
-		return min_distance_key;
-	}*/
 
 	getXZoom = () =>{
 		return this.position.width / this.state.originalDimensions.width;

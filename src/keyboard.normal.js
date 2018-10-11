@@ -90,6 +90,7 @@ class KeyboardNormal extends React.Component {
 			animTime: 0.1,
 			useRealKeyboard: true,
 			maxKeyErrorDistance: 2,
+			// You can manipulate following two values to control swipe gesture threshold.
 			minSwipeX: 40,
 			minSwipeY: 1,
 			originalScale: this.props.originalScale
@@ -122,12 +123,14 @@ class KeyboardNormal extends React.Component {
 	 * 					you should access as 'e.nativeEvent'
 	 */
 	onTouchStart(e) {
-		const touch = e.nativeEvent.touches[0];
-		this.startX = touch.clientX;
-		this.startY = touch.clientY;
-		this._swipe = { x: touch.clientX, Y:touch.clientY };
-		this.setState({ swiped: false });
-		e.stopPropagation();
+		console.log("touchstart");
+		this.isMoving = false;
+		//const touch = e.nativeEvent.touches[0];
+		if(this.inStartingPosition && e.nativeEvent.touches.length ===1){
+			this.startX = e.nativeEvent.touches[0].pageX;
+			this.startY = e.nativeEvent.touches[0].pageY;
+			this.isMoving = true;
+		}
 	}
 
 	/**
@@ -135,11 +138,44 @@ class KeyboardNormal extends React.Component {
 	 * @param {*} e : touch event object.
 	 */
 	_onTouchMove(e) {
-		if (e.changedTouches && e.changedTouches.length) {
-			//const touch = e.nativeEvent.changedTouches[0];
-			this._swipe.swiping = true;
+		console.log('touchmove');
+		if(this.isMoving === true){
+		console.log("move");
+			var x = e.nativeEvent.touches[0].pageX;
+			var y = e.nativeEvent.touches[0].pageY;
+			var dx = this.startX - x; 
+			var dy = this.startY - y;
+			console.log("DX: "+dx+"/"+dy);
+			if((Math.abs(dx) > Math.abs(dy)) &&
+				Math.abs(dx) >= this.config.minSwipeX){
+				if(dx > 0){
+					this.onSwipe("left");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+					console.log("swipeleft");
+				}else{
+					this.onSwipe("right");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+					console.log("swiperight");
+				}
+			}else if(Math.abs(dy) >= this.config.minSwipeY){
+				if(dy > 0){
+					this.onSwipe("up");
+					console.log("swipeup");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+				}else{
+					this.onSwipe("down");
+					this.justGestured = true;
+					this.isMoving = false;
+					this.startX = this.startY = null;
+				}
+			}
 		}
-		e.stopPropagation();
 	}
 
 	/**
@@ -147,37 +183,20 @@ class KeyboardNormal extends React.Component {
 	 * @param {} e : touch event object.
 	 */
 	_onTouchEnd(e) {
-		console.log("onTouchEnd");
-		const touch = e.nativeEvent.changedTouches[0];
-		var dx = touch.clientX - this.startX;
-		var dy = touch.clientY - this.startY;
-		console.log("[OnTouchEnd] XY: "+touch.clientX + "/"+touch.clientY + "/"+dx+"/"+dy);
-		//Swipe Event detection.
-		if (this._swipe.swiping){
-			if(Math.abs(dx) > this.config.minSwipeX){
-				if(dx > 0){
-					this.onSwipe("right");
-				}else if(dx < 0){
-					this.onSwipe("left");
-				}
-			}
-			else if(Math.abs(dy) > this.config.minSwipeY){
-				if(dy > 0){
-					this.onSwipe("down");
-				}else if(dy < 0){
-					this.onSwipe("up");
-				}
-			}
-			this.props.onSwiped && this.props.onSwiped();
-			this.setState({swiped:true});
+		console.log('touchend');
+		if(this.justGestured === true){
+			this.justGestured = false;
+			e.nativeEvent.preventDefault();
+			e.nativeEvent.stopPropagation();
+			return;
 		}else{
-			//if not swipe event, process as 'keyclick' event
+			const touch = e.nativeEvent.changedTouches[0];
 			var x = (touch.clientX - this.offsetLeft) / (this.position.width/this.state.originalDimensions.width);
 			var y = (touch.clientY - this.offsetTop) / (this.position.height/this.state.originalDimensions.height);
+			e.nativeEvent.preventDefault();
+			e.nativeEvent.stopPropagation();
 			this.onKeyClick({x:x,y:y});
 		}
-		this._swipe = {};
-		e.stopPropagation();
 	}
 
 	/**
@@ -266,8 +285,8 @@ class KeyboardNormal extends React.Component {
 
 			// Flashing a selected key on overlay <div>
 			this.flashKey(key);
-			ev.preventDefault();
-			ev.stopPropagation();
+			ev.nativeEvent.preventDefault();
+			ev.nativeEvent.stopPropagation();
 			return false;
 		}
 	}
@@ -290,7 +309,7 @@ class KeyboardNormal extends React.Component {
 		console.log("[onPointerUp] xy: "+ x + ":" + y);
 		this.onKeyClick({x:x,y:y});
 		//e.preventDefault();
-		e.stopPropagation();
+		//e.stopPropagation();
 		return false;
 	}
 
@@ -308,6 +327,8 @@ class KeyboardNormal extends React.Component {
 		console.log("[onMouseDown] xy: "+ x + ":" + y);
 		console.log("[onMouseDown] position: "+ this.position.x + ":" + this.position.y);
 		this.onKeyClick({x:x,y:y});
+		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	/**
@@ -371,8 +392,7 @@ class KeyboardNormal extends React.Component {
 			return(
 				<div className="container" style = {style} tabIndex="-1"
 						onKeyDown={this.onKeyDown}
-						onMouseDown = {this.onMouseDown}
-						onTouchStart={this._onTouchStart}
+						onTouchStart={this.onTouchStart}
 						onTouchMove={this._onTouchMove}
 						onTouchEnd={this._onTouchEnd}>
 					<img id="keyboardtype" className="KB" alt="kb"
@@ -394,7 +414,7 @@ class KeyboardNormal extends React.Component {
 	 * @param animated: a flag for transition animation.
 	 */
 	reset = (animated) => {
-		console.log("call reset...");
+		//console.log("call reset...");
 		this.setViewPort({
 			x:0 , y:0,
 			//width: this.originalDimensions.width,
@@ -443,6 +463,7 @@ class KeyboardNormal extends React.Component {
 	 * KeyClick event on the keyboard image.
 	 */
 	onKeyClick = (pt) => {
+
 		console.log("[onKeyClick] ..."+pt.x);
 		var key = this.getKeyChar(pt);
 
@@ -460,7 +481,7 @@ class KeyboardNormal extends React.Component {
 	 * 	This will return initial keyboard image size and your watch size.
 	 */
 	getWindowDimension = () => {
-		console.log("Scale: "+this.config.originalScale)
+		//console.log("Scale: "+this.config.originalScale)
 		return {
 			//width: this.originalDimensions.width * this.config.originalScale,
 			//height: this.originalDimensions.height * this.config.originalScale
