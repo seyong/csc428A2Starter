@@ -1,5 +1,7 @@
 This project is a starter code for the assignment 2 of the CSC428/CSC2514, Fall 2018, at the University of Toronto.
 
+We converted the Zoomboard code into React Application for Assignment 2. Your job is to fill the rest of TO-DO area. The original Zoomboard link is https://github.com/soney/zoomboard. 
+
 We have provided comments in the code for you to better understand it. Here we provide instructions about how to run the code in addition to the general guidelines about the react app, on which this starter code is built.
 
 Read the first two sections in the table of contents to understand how to run the code on laptops/desktops/mobiles. The rest sections provide general guidelines about the react app.
